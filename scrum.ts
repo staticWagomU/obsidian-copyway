@@ -172,10 +172,47 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "",
-    status: "planning",
-    pbi_id: null,
-    subtasks: [],
+    goal: "Obsidianプラグインとして動作する基盤を構築し、設定の永続化機能を実装する",
+    status: "active",
+    pbi_id: "PBI-001",
+    subtasks: [
+      {
+        id: "ST-001",
+        title: "types.tsにCopyDestination型を定義する",
+        status: "red",
+        test_file: "src/types.test.ts",
+      },
+      {
+        id: "ST-002",
+        title: "types.tsにCopywaySettings型を定義する",
+        status: "red",
+        test_file: "src/types.test.ts",
+      },
+      {
+        id: "ST-003",
+        title: "main.tsでプラグインクラスを実装する(onload/onunload)",
+        status: "red",
+        test_file: "src/main.test.ts",
+      },
+      {
+        id: "ST-004",
+        title: "設定の読み込み機能を実装する(loadSettings)",
+        status: "red",
+        test_file: "src/main.test.ts",
+      },
+      {
+        id: "ST-005",
+        title: "設定の保存機能を実装する(saveSettings)",
+        status: "red",
+        test_file: "src/main.test.ts",
+      },
+      {
+        id: "ST-006",
+        title: "manifest.jsonにコマンドを登録する",
+        status: "red",
+        test_file: "manifest.json",
+      },
+    ],
   },
 
   retrospective_insights: [],
