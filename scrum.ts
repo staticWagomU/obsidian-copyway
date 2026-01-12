@@ -186,7 +186,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-002",
         title: "設定画面の基本構造を実装（display()メソッド）",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {

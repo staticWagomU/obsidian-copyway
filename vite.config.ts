@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => {
 		},
 		test: {
 			globals: true,
-			environment: "node",
+			environment: "jsdom",
 			include: ["src/**/*.test.ts"],
 			coverage: {
 				provider: "v8",

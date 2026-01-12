@@ -1,4 +1,4 @@
-import { App, PluginSettingTab } from "obsidian";
+import { App, PluginSettingTab, Setting } from "obsidian";
 import type CopywayPlugin from "./main";
 
 /**
@@ -13,6 +13,10 @@ export class CopywaySettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		// 設定画面を表示する処理（後続のサブタスクで実装）
+		const { containerEl } = this;
+
+		containerEl.empty();
+
+		new Setting(containerEl).setName("Copy destinations").setHeading();
 	}
 }
