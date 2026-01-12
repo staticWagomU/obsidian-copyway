@@ -67,10 +67,8 @@ export default defineConfig(({ mode }) => {
 				reporter: ["text", "json", "html"],
 				exclude: ["node_modules/", "src/**/*.test.ts"],
 			},
-			server: {
-				deps: {
-					external: ["obsidian"],
-				},
+			alias: {
+				obsidian: "/Users/wagomu/dev/github.com/staticWagomU/obsidian-copyway/src/__mocks__/obsidian.ts",
 			},
 		},
 	};

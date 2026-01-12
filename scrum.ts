@@ -191,7 +191,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-003",
         title: "main.tsでプラグインクラスを実装する(onload/onunload)",
-        status: "red",
+        status: "done",
         test_file: "src/main.test.ts",
       },
       {
