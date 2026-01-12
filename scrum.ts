@@ -89,13 +89,14 @@ const dashboard: ScrumDashboard = {
       title: "プラグイン基盤・型定義",
       description:
         "開発者として、プラグインの基盤を構築することで、他の機能を実装できる",
-      status: "draft",
+      status: "ready",
       acceptance_criteria: [
         "main.tsでプラグインが正常に読み込まれる",
         "types.tsにCopywaySettings, CopyDestination型が定義されている",
         "設定の読み込み/保存が正常に動作する",
         "manifest.jsonにコマンドが登録されている",
       ],
+      story_points: 3,
     },
     {
       id: "PBI-002",
