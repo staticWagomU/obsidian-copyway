@@ -172,55 +172,35 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "Obsidianプラグインとして動作する基盤を構築し、設定の永続化機能を実装する",
-    status: "done",
-    pbi_id: "PBI-001",
-    subtasks: [
-      {
-        id: "ST-001",
-        title: "types.tsにCopyDestination型を定義する",
-        status: "done",
-        test_file: "src/types.test.ts",
-      },
-      {
-        id: "ST-002",
-        title: "types.tsにCopywaySettings型を定義する",
-        status: "done",
-        test_file: "src/types.test.ts",
-      },
-      {
-        id: "ST-003",
-        title: "main.tsでプラグインクラスを実装する(onload/onunload)",
-        status: "done",
-        test_file: "src/main.test.ts",
-      },
-      {
-        id: "ST-004",
-        title: "設定の読み込み機能を実装する(loadSettings)",
-        status: "done",
-        test_file: "src/main.test.ts",
-      },
-      {
-        id: "ST-005",
-        title: "設定の保存機能を実装する(saveSettings)",
-        status: "done",
-        test_file: "src/main.test.ts",
-      },
-      {
-        id: "ST-006",
-        title: "manifest.jsonにコマンドを登録する",
-        status: "done",
-        test_file: "manifest.json",
-      },
-    ],
+    goal: "",
+    status: "planning",
+    pbi_id: null,
+    subtasks: [],
   },
 
   retrospective_insights: [
+    // Sprint 1 (PBI-001: プラグイン基盤・型定義) - 完了
+    // What went well (うまくいったこと):
     "TDDサイクル(RED-GREEN-REFACTOR)を厳密に守ることで、品質の高いコードが書けた",
-    "Obsidian APIのモック環境を整備したことで、テストが効率的に書けるようになった",
-    "型定義を先に定義することで、実装時の方向性が明確になった",
+    "Obsidian APIのモック環境(createMockApp)を整備したことで、外部依存なしでテストが効率的に書けるようになった",
+    "型定義を先に定義することで、実装時の方向性が明確になり、TypeScriptの型推論が効果的に機能した",
     "各サブタスク完了時に即座にコミットすることで、変更履歴が追いやすくなった",
     "Definition of Doneの自動チェック(lint, typecheck, test, build)により品質が担保された",
+
+    // What could be improved (改善できること):
+    "manifest.jsonへのコマンド登録がST-006で計画されていたが、実際にはコマンド定義が含まれていなかった。Acceptance Criteriaと実装の整合性を確認する必要がある",
+    "テストファイル(types.test.ts, main.test.ts)では型の構造検証に重点が置かれているが、エッジケースのテストカバレッジを増やす余地がある",
+    "Obsidian APIモックが最小限の実装(vault, workspace)のみ。今後のPBIで必要になる可能性が高いメソッド(e.g., vault.adapter.write)を事前にモック化しておくと効率的",
+
+    // Key learnings (学び):
+    "loadSettings()でObject.assign()とPartial<T>を組み合わせることで、設定の部分的な更新と後方互換性を両立できることを学んだ",
+    "Vitestのvi.spyOn()を使ったモック手法により、ObsidianのPlugin基底クラスのメソッド(loadData/saveData)の振る舞いを効果的にテストできた",
+    "型定義とテストを先に書くことで、実装が「テストを通すための最小限のコード」になり、過剰実装を防げた",
+
+    // Action items for next Sprint (次Sprintへのアクション):
+    "PBI-002(設定画面)では、PluginSettingTabのモックが必要になるため、事前に調査・準備する",
+    "コマンド登録の実装(addCommand)は次Sprint以降で必要になるため、manifest.jsonとmain.tsの両方で整合性を保つ方法を検討する",
+    "テストの記述パターン(describe/test構造、モックの作り方)が確立されたので、ドキュメント化してチーム知識として共有する",
   ],
 };
 
