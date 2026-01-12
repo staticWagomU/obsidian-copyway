@@ -9,3 +9,11 @@ export interface CopyDestination {
 	/** 上書きを許可するかどうか */
 	overwrite: boolean;
 }
+
+/**
+ * プラグインの設定を表す型
+ */
+export interface CopywaySettings {
+	/** コピー先のリスト */
+	destinations: CopyDestination[];
+}

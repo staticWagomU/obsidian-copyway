@@ -185,7 +185,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-002",
         title: "types.tsにCopywaySettings型を定義する",
-        status: "red",
+        status: "done",
         test_file: "src/types.test.ts",
       },
       {

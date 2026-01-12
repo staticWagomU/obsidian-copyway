@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import type { CopyDestination } from "./types";
+import type { CopyDestination, CopywaySettings } from "./types";
 
 describe("CopyDestination型", () => {
 	test("必須フィールドを持つCopyDestinationオブジェクトが作成できる", () => {
@@ -22,5 +22,37 @@ describe("CopyDestination型", () => {
 		};
 
 		expect(destination.overwrite).toBe(true);
+	});
+});
+
+describe("CopywaySettings型", () => {
+	test("空のdestinations配列を持つCopywaySettingsオブジェクトが作成できる", () => {
+		const settings: CopywaySettings = {
+			destinations: [],
+		};
+
+		expect(settings.destinations).toEqual([]);
+		expect(Array.isArray(settings.destinations)).toBe(true);
+	});
+
+	test("複数のCopyDestinationを持つCopywaySettingsオブジェクトが作成できる", () => {
+		const settings: CopywaySettings = {
+			destinations: [
+				{
+					path: "/path/to/destination1",
+					description: "コピー先1",
+					overwrite: false,
+				},
+				{
+					path: "/path/to/destination2",
+					description: "コピー先2",
+					overwrite: true,
+				},
+			],
+		};
+
+		expect(settings.destinations).toHaveLength(2);
+		expect(settings.destinations[0]?.path).toBe("/path/to/destination1");
+		expect(settings.destinations[1]?.path).toBe("/path/to/destination2");
 	});
 });
