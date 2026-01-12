@@ -2,6 +2,13 @@ import { Plugin } from "obsidian";
 import type { CopywaySettings } from "./types";
 
 /**
+ * デフォルト設定
+ */
+const DEFAULT_SETTINGS: CopywaySettings = {
+	destinations: [],
+};
+
+/**
  * Copywayプラグインのメインクラス
  */
 export default class CopywayPlugin extends Plugin {
@@ -15,5 +22,16 @@ export default class CopywayPlugin extends Plugin {
 	onunload() {
 		// プラグインのクリーンアップ処理
 		console.log("Unloading Copyway plugin");
+	}
+
+	/**
+	 * 設定を読み込む
+	 */
+	async loadSettings(): Promise<void> {
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			(await this.loadData()) as Partial<CopywaySettings>,
+		);
 	}
 }

@@ -44,4 +44,65 @@ describe("CopywayPlugin", () => {
 			expect(typeof plugin.onunload).toBe("function");
 		});
 	});
+
+	describe("設定の読み込み", () => {
+		test("loadSettingsメソッドが存在する", () => {
+			expect(plugin.loadSettings).toBeDefined();
+			expect(typeof plugin.loadSettings).toBe("function");
+		});
+
+		test("loadSettingsがデータがない場合はデフォルト設定を返す", async () => {
+			// loadDataがnullを返す場合
+			vi.spyOn(plugin, "loadData").mockResolvedValue(null);
+
+			await plugin.loadSettings();
+
+			expect(plugin.settings).toEqual({
+				destinations: [],
+			});
+		});
+
+		test("loadSettingsが保存されたデータを読み込む", async () => {
+			const savedData = {
+				destinations: [
+					{
+						path: "/test/path",
+						description: "Test destination",
+						overwrite: false,
+					},
+				],
+			};
+			vi.spyOn(plugin, "loadData").mockResolvedValue(savedData);
+
+			await plugin.loadSettings();
+
+			expect(plugin.settings).toEqual(savedData);
+		});
+
+		test("loadSettingsが部分的なデータをマージする", async () => {
+			// destinations以外のフィールドがない場合
+			const partialData = {
+				destinations: [
+					{
+						path: "/partial/path",
+						description: "Partial destination",
+						overwrite: true,
+					},
+				],
+			};
+			vi.spyOn(plugin, "loadData").mockResolvedValue(partialData);
+
+			await plugin.loadSettings();
+
+			expect(plugin.settings).toEqual({
+				destinations: [
+					{
+						path: "/partial/path",
+						description: "Partial destination",
+						overwrite: true,
+					},
+				],
+			});
+		});
+	});
 });

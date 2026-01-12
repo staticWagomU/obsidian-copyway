@@ -197,7 +197,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-004",
         title: "設定の読み込み機能を実装する(loadSettings)",
-        status: "red",
+        status: "done",
         test_file: "src/main.test.ts",
       },
       {
