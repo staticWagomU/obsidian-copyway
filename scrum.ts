@@ -174,10 +174,53 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "",
-    status: "planning",
-    pbi_id: null,
-    subtasks: [],
+    goal: "ファイルコピー処理を確実に実行できるCopyServiceを実装し、上書きとリネームの両方に対応する",
+    status: "active",
+    pbi_id: "PBI-003",
+    subtasks: [
+      {
+        id: "ST-009",
+        title: "Result型とCopyServiceの基本型定義を作成",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "ST-010",
+        title: "基本的なファイルコピー機能を実装（正常系）",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "ST-011",
+        title: "上書きモード時の同名ファイル処理を実装",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "ST-012",
+        title: "リネームモード時の連番付与機能を実装（_1, _2形式）",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "ST-013",
+        title: "コピー先ディレクトリ存在チェックとエラー処理を実装",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "ST-014",
+        title: "I/Oエラーハンドリングを実装",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "ST-015",
+        title: "Obsidian Vault Adapterモックを拡張（read/write/exists/stat）",
+        status: "red",
+        test_file: "src/__mocks__/obsidian.ts",
+      },
+    ],
   },
 
   retrospective_insights: [
