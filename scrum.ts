@@ -251,6 +251,31 @@ const dashboard: ScrumDashboard = {
     "PBI-002(設定画面)では、PluginSettingTabのモックが必要になるため、事前に調査・準備する",
     "コマンド登録の実装(addCommand)は次Sprint以降で必要になるため、manifest.jsonとmain.tsの両方で整合性を保つ方法を検討する",
     "テストの記述パターン(describe/test構造、モックの作り方)が確立されたので、ドキュメント化してチーム知識として共有する",
+
+    // Sprint 2 (PBI-002: 設定画面) - 完了（条件付き）
+    // What went well (うまくいったこと):
+    "CopywaySettingTabの実装により、コピー先の追加・編集・削除機能が完全に動作するようになった",
+    "Obsidian Settingクラスのメソッドチェーンパターン（addText, addToggle, addButton）を効果的に活用できた",
+    "設定変更時の永続化処理（saveSettings呼び出し）が各イベントハンドラで一貫して実装された",
+    "display()メソッドの再呼び出しによる動的UI更新が正常に機能し、削除・追加時の即時反映が実現できた",
+    "14個のテストケースで主要機能を網羅し、Definition of Doneの自動チェックが完全合格した",
+
+    // What could be improved (改善できること):
+    "ST-006「フォルダ選択ダイアログ」がscrum.tsで'done'とマークされていたが、実装とテストが存在しなかった。タスク完了の定義を厳密にする必要がある",
+    "受入基準「フォルダ選択ダイアログでパスを選択できる」が未達成（5/6達成）。現状ではパス手動入力のみで、UXとして改善余地がある",
+    "vault.adapter.list()のモック準備はされていたが（settings-tab.test.ts:14）、実際には使用されなかった。タスク計画と実装の乖離を早期に検知すべき",
+    "手動テスト（Obsidian上での動作確認）がまだ実施されていない。Definition of Doneの手動チェック項目を次Sprintで実施する必要がある",
+
+    // Key learnings (学び):
+    "Obsidian SettingクラスのDOMイベント処理では、配列のインデックスがクロージャで保持されるため、イベントハンドラ内での安全な参照チェック（if (d)）が重要だと学んだ",
+    "display()メソッドでcontainerEl.empty()を呼ぶことで、既存UIを完全にクリアしてから再描画するパターンが、状態同期の簡潔な実装方法として有効",
+    "Sprint Review時に実装とAcceptance Criteriaの詳細な突き合わせが重要。表面的なタスク完了マークだけでは不十分",
+
+    // Action items for next Sprint (次Sprintへのアクション):
+    "PBI-007として「フォルダ選択ダイアログ」を新規作成し、vault.adapter.list()を使ったフォルダ一覧取得とモーダル選択UIを実装する（任意機能、UX改善）",
+    "Definition of Doneの手動チェック項目を実施: Obsidian上での実際の動作確認、エラーメッセージ表示確認",
+    "タスク完了基準を明確化: 「テストが存在し、実装がテストを通過し、コミットされた」を'done'の条件とする",
+    "次Sprint開始前に、すべてのサブタスクの受入基準を具体的に定義し、チーム内で合意を得る",
   ],
 };
 
