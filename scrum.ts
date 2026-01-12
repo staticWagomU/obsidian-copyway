@@ -89,7 +89,7 @@ const dashboard: ScrumDashboard = {
       title: "プラグイン基盤・型定義",
       description:
         "開発者として、プラグインの基盤を構築することで、他の機能を実装できる",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         "main.tsでプラグインが正常に読み込まれる",
         "types.tsにCopywaySettings, CopyDestination型が定義されている",
@@ -173,7 +173,7 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "Obsidianプラグインとして動作する基盤を構築し、設定の永続化機能を実装する",
-    status: "active",
+    status: "done",
     pbi_id: "PBI-001",
     subtasks: [
       {
@@ -215,7 +215,13 @@ const dashboard: ScrumDashboard = {
     ],
   },
 
-  retrospective_insights: [],
+  retrospective_insights: [
+    "TDDサイクル(RED-GREEN-REFACTOR)を厳密に守ることで、品質の高いコードが書けた",
+    "Obsidian APIのモック環境を整備したことで、テストが効率的に書けるようになった",
+    "型定義を先に定義することで、実装時の方向性が明確になった",
+    "各サブタスク完了時に即座にコミットすることで、変更履歴が追いやすくなった",
+    "Definition of Doneの自動チェック(lint, typecheck, test, build)により品質が担保された",
+  ],
 };
 
 // =============================================================================
