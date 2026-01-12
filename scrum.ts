@@ -209,7 +209,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-006",
         title: "manifest.jsonにコマンドを登録する",
-        status: "red",
+        status: "done",
         test_file: "manifest.json",
       },
     ],

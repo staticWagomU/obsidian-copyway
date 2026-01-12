@@ -1,5 +1,3 @@
-import { vi } from "vitest";
-
 export class Plugin {
 	app: unknown;
 	manifest: unknown;

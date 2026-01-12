@@ -35,20 +35,23 @@ describe("CopywayPlugin", () => {
 		});
 
 		test("onloadメソッドが存在する", () => {
-			expect(plugin.onload).toBeDefined();
-			expect(typeof plugin.onload).toBe("function");
+			const onload = plugin.onload.bind(plugin);
+			expect(onload).toBeDefined();
+			expect(typeof onload).toBe("function");
 		});
 
 		test("onunloadメソッドが存在する", () => {
-			expect(plugin.onunload).toBeDefined();
-			expect(typeof plugin.onunload).toBe("function");
+			const onunload = plugin.onunload.bind(plugin);
+			expect(onunload).toBeDefined();
+			expect(typeof onunload).toBe("function");
 		});
 	});
 
 	describe("設定の読み込み", () => {
 		test("loadSettingsメソッドが存在する", () => {
-			expect(plugin.loadSettings).toBeDefined();
-			expect(typeof plugin.loadSettings).toBe("function");
+			const loadSettings = plugin.loadSettings.bind(plugin);
+			expect(loadSettings).toBeDefined();
+			expect(typeof loadSettings).toBe("function");
 		});
 
 		test("loadSettingsがデータがない場合はデフォルト設定を返す", async () => {
@@ -108,8 +111,9 @@ describe("CopywayPlugin", () => {
 
 	describe("設定の保存", () => {
 		test("saveSettingsメソッドが存在する", () => {
-			expect(plugin.saveSettings).toBeDefined();
-			expect(typeof plugin.saveSettings).toBe("function");
+			const saveSettings = plugin.saveSettings.bind(plugin);
+			expect(saveSettings).toBeDefined();
+			expect(typeof saveSettings).toBe("function");
 		});
 
 		test("saveSettingsが現在の設定を保存する", async () => {
