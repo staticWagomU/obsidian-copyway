@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+export type App = any;
+
 export class Plugin {
-	app: unknown;
+	app: App;
 	manifest: unknown;
 
-	constructor(app: unknown, manifest: unknown) {
+	constructor(app: App, manifest: unknown) {
 		this.app = app;
 		this.manifest = manifest;
 	}
@@ -18,8 +22,8 @@ export class Plugin {
 }
 
 export class Modal {
-	app: unknown;
-	constructor(app: unknown) {
+	app: App;
+	constructor(app: App) {
 		this.app = app;
 	}
 	open(): void {}
@@ -33,9 +37,9 @@ export class Notice {
 }
 
 export class PluginSettingTab {
-	app: unknown;
-	plugin: unknown;
-	constructor(app: unknown, plugin: unknown) {
+	app: App;
+	plugin: Plugin;
+	constructor(app: App, plugin: Plugin) {
 		this.app = app;
 		this.plugin = plugin;
 	}

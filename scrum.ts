@@ -180,7 +180,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-001",
         title: "CopywaySettingTabクラスの型定義とモック準備",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {
