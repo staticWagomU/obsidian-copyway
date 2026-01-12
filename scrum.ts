@@ -181,7 +181,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-009",
         title: "Result型とCopyServiceの基本型定義を作成",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {
