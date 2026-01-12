@@ -173,10 +173,59 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "",
-    status: "planning",
-    pbi_id: null,
-    subtasks: [],
+    goal: "ユーザーが設定画面からコピー先を直感的に管理できるようにする",
+    status: "active",
+    pbi_id: "PBI-002",
+    subtasks: [
+      {
+        id: "ST-001",
+        title: "CopywaySettingTabクラスの型定義とモック準備",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-002",
+        title: "設定画面の基本構造を実装（display()メソッド）",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-003",
+        title: "コピー先追加UI実装（Add destinationボタン）",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-004",
+        title: "コピー先編集UI実装（パス、ディスクリプション、上書きトグル）",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-005",
+        title: "コピー先削除UI実装（削除ボタン）",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-006",
+        title: "フォルダ選択ダイアログ統合（vault.adapter.list）",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-007",
+        title: "設定永続化の統合テスト（saveSettings呼び出し確認）",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "ST-008",
+        title: "main.tsでSettingTabを登録",
+        status: "red",
+        test_file: "src/main.test.ts",
+      },
+    ],
   },
 
   retrospective_insights: [
