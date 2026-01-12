@@ -119,7 +119,7 @@ const dashboard: ScrumDashboard = {
       title: "CopyService",
       description:
         "ユーザーとして、ファイルコピー処理が確実に実行されることで、安心してファイルを管理できる",
-      status: "draft",
+      status: "ready",
       acceptance_criteria: [
         "指定したパスにファイルがコピーされる",
         "同名ファイル存在時に上書きコピーができる",
@@ -127,6 +127,7 @@ const dashboard: ScrumDashboard = {
         "コピー先ディレクトリが存在しない場合はエラーを返す",
         "I/Oエラー時は適切なエラーを返す",
       ],
+      story_points: 5,
     },
     {
       id: "PBI-004",
