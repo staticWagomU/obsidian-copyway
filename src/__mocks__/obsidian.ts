@@ -66,6 +66,55 @@ export class ButtonComponent {
 	}
 }
 
+export class TextComponent {
+	inputEl: HTMLInputElement;
+	constructor() {
+		this.inputEl = document.createElement("input");
+		this.inputEl.type = "text";
+	}
+	setPlaceholder(placeholder: string): this {
+		this.inputEl.placeholder = placeholder;
+		return this;
+	}
+	setValue(value: string): this {
+		this.inputEl.value = value;
+		return this;
+	}
+	onChange(callback: (value: string) => void): this {
+		this.inputEl.addEventListener("input", (e) => {
+			callback((e.target as HTMLInputElement).value);
+		});
+		return this;
+	}
+}
+
+export class ToggleComponent {
+	toggleEl: HTMLElement;
+	checkboxEl: HTMLInputElement;
+	private value: boolean;
+	constructor() {
+		this.value = false;
+		this.toggleEl = document.createElement("div");
+		this.toggleEl.classList.add("checkbox-container");
+		this.checkboxEl = document.createElement("input");
+		this.checkboxEl.type = "checkbox";
+		this.toggleEl.appendChild(this.checkboxEl);
+	}
+	setValue(value: boolean): this {
+		this.value = value;
+		this.checkboxEl.checked = value;
+		return this;
+	}
+	onChange(callback: (value: boolean) => void): this {
+		this.toggleEl.addEventListener("click", () => {
+			this.value = !this.value;
+			this.checkboxEl.checked = this.value;
+			callback(this.value);
+		});
+		return this;
+	}
+}
+
 export class Setting {
 	settingEl: HTMLElement;
 	constructor(containerEl: HTMLElement) {
@@ -83,7 +132,16 @@ export class Setting {
 		this.settingEl.classList.add("setting-item-heading");
 		return this;
 	}
-	addText(_cb: (text: unknown) => unknown): this {
+	addText(cb: (text: TextComponent) => void): this {
+		const text = new TextComponent();
+		cb(text);
+		this.settingEl.appendChild(text.inputEl);
+		return this;
+	}
+	addToggle(cb: (toggle: ToggleComponent) => void): this {
+		const toggle = new ToggleComponent();
+		cb(toggle);
+		this.settingEl.appendChild(toggle.toggleEl);
 		return this;
 	}
 	addButton(cb: (button: ButtonComponent) => void): this {

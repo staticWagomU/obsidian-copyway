@@ -19,6 +19,39 @@ export class CopywaySettingTab extends PluginSettingTab {
 
 		new Setting(containerEl).setName("Copy destinations").setHeading();
 
+		// 既存のdestinationを表示
+		for (let i = 0; i < this.plugin.settings.destinations.length; i++) {
+			const dest = this.plugin.settings.destinations[i];
+			if (!dest) continue;
+
+			new Setting(containerEl)
+				.setName(`Destination ${i + 1}`)
+				.addText((text) => {
+					text
+						.setPlaceholder("Path")
+						.setValue(dest.path)
+						.onChange((value) => {
+							const d = this.plugin.settings.destinations[i];
+							if (d) d.path = value;
+						});
+				})
+				.addText((text) => {
+					text
+						.setPlaceholder("Description")
+						.setValue(dest.description)
+						.onChange((value) => {
+							const d = this.plugin.settings.destinations[i];
+							if (d) d.description = value;
+						});
+				})
+				.addToggle((toggle) => {
+					toggle.setValue(dest.overwrite).onChange((value) => {
+						const d = this.plugin.settings.destinations[i];
+						if (d) d.overwrite = value;
+					});
+				});
+		}
+
 		new Setting(containerEl)
 			.setName("Add destination")
 			.setDesc("Add a new copy destination")

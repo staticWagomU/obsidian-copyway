@@ -105,4 +105,84 @@ describe("CopywaySettingTab", () => {
 			});
 		});
 	});
+
+	describe("ST-004: コピー先編集UI実装（パス、ディスクリプション、上書きトグル）", () => {
+		test("destinationが存在する場合、編集UIが表示される", () => {
+			plugin.settings.destinations = [
+				{ path: "folder1", description: "First destination", overwrite: true },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			// 見出し + Add destination + destination編集 = 3つの設定項目
+			const settings = settingTab.containerEl.querySelectorAll(".setting-item");
+			expect(settings.length).toBe(3);
+		});
+
+		test("pathテキスト入力が機能する", () => {
+			plugin.settings.destinations = [
+				{ path: "", description: "", overwrite: false },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			const inputs = settingTab.containerEl.querySelectorAll("input[type='text']");
+			expect(inputs.length).toBeGreaterThanOrEqual(1);
+
+			// pathフィールドに値を入力
+			const pathInput = inputs[0] as HTMLInputElement;
+			pathInput.value = "test/path";
+			pathInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+			expect(plugin.settings.destinations[0]?.path).toBe("test/path");
+		});
+
+		test("descriptionテキスト入力が機能する", () => {
+			plugin.settings.destinations = [
+				{ path: "", description: "", overwrite: false },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			const inputs = settingTab.containerEl.querySelectorAll("input[type='text']");
+			expect(inputs.length).toBeGreaterThanOrEqual(2);
+
+			// descriptionフィールドに値を入力
+			const descInput = inputs[1] as HTMLInputElement;
+			descInput.value = "Test description";
+			descInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+			expect(plugin.settings.destinations[0]?.description).toBe(
+				"Test description",
+			);
+		});
+
+		test("overwriteトグルが機能する", () => {
+			plugin.settings.destinations = [
+				{ path: "", description: "", overwrite: false },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			const toggle = settingTab.containerEl.querySelector(".checkbox-container");
+			expect(toggle).not.toBeNull();
+
+			// トグルをクリック
+			toggle?.dispatchEvent(new Event("click", { bubbles: true }));
+
+			expect(plugin.settings.destinations[0]?.overwrite).toBe(true);
+		});
+	});
 });

@@ -198,7 +198,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-004",
         title: "コピー先編集UI実装（パス、ディスクリプション、上書きトグル）",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {
