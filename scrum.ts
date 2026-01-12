@@ -179,7 +179,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-001",
         title: "types.tsにCopyDestination型を定義する",
-        status: "red",
+        status: "done",
         test_file: "src/types.test.ts",
       },
       {
