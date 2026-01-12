@@ -204,7 +204,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-005",
         title: "コピー先削除UI実装（削除ボタン）",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {

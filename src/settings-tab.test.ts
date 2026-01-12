@@ -185,4 +185,46 @@ describe("CopywaySettingTab", () => {
 			expect(plugin.settings.destinations[0]?.overwrite).toBe(true);
 		});
 	});
+
+	describe("ST-005: コピー先削除UI実装（削除ボタン）", () => {
+		test("destination編集UIに削除ボタンが表示される", () => {
+			plugin.settings.destinations = [
+				{ path: "test", description: "Test", overwrite: false },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			// 削除ボタンが存在する（Add destinationボタンと削除ボタン）
+			const buttons = settingTab.containerEl.querySelectorAll("button");
+			expect(buttons.length).toBeGreaterThanOrEqual(2);
+		});
+
+		test("削除ボタンをクリックするとdestinationが削除される", () => {
+			plugin.settings.destinations = [
+				{ path: "test1", description: "Test1", overwrite: false },
+				{ path: "test2", description: "Test2", overwrite: true },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			expect(plugin.settings.destinations.length).toBe(2);
+
+			// すべてのボタンを取得（最後のボタンはAdd destination）
+			const buttons = Array.from(settingTab.containerEl.querySelectorAll("button"));
+			// 最初のdestinationの削除ボタンをクリック（最初のボタン）
+			const firstDeleteButton = buttons[0];
+			expect(firstDeleteButton).toBeDefined();
+			firstDeleteButton?.click();
+
+			// 削除後は1つになる
+			expect(plugin.settings.destinations.length).toBe(1);
+			expect(plugin.settings.destinations[0]?.path).toBe("test2");
+		});
+	});
 });

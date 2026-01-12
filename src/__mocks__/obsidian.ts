@@ -60,6 +60,10 @@ export class ButtonComponent {
 		this.buttonEl.textContent = text;
 		return this;
 	}
+	setWarning(): this {
+		this.buttonEl.classList.add("mod-warning");
+		return this;
+	}
 	onClick(callback: () => void): this {
 		this.buttonEl.addEventListener("click", callback);
 		return this;

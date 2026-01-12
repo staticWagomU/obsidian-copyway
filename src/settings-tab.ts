@@ -49,6 +49,15 @@ export class CopywaySettingTab extends PluginSettingTab {
 						const d = this.plugin.settings.destinations[i];
 						if (d) d.overwrite = value;
 					});
+				})
+				.addButton((button) => {
+					button
+						.setButtonText("Delete")
+						.setWarning()
+						.onClick(() => {
+							this.plugin.settings.destinations.splice(i, 1);
+							this.display();
+						});
 				});
 		}
 
