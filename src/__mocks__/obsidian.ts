@@ -51,6 +51,21 @@ export class PluginSettingTab {
 
 export class MarkdownView {}
 
+export class ButtonComponent {
+	buttonEl: HTMLButtonElement;
+	constructor() {
+		this.buttonEl = document.createElement("button");
+	}
+	setButtonText(text: string): this {
+		this.buttonEl.textContent = text;
+		return this;
+	}
+	onClick(callback: () => void): this {
+		this.buttonEl.addEventListener("click", callback);
+		return this;
+	}
+}
+
 export class Setting {
 	settingEl: HTMLElement;
 	constructor(containerEl: HTMLElement) {
@@ -69,6 +84,12 @@ export class Setting {
 		return this;
 	}
 	addText(_cb: (text: unknown) => unknown): this {
+		return this;
+	}
+	addButton(cb: (button: ButtonComponent) => void): this {
+		const button = new ButtonComponent();
+		cb(button);
+		this.settingEl.appendChild(button.buttonEl);
 		return this;
 	}
 }

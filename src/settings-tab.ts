@@ -18,5 +18,19 @@ export class CopywaySettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl).setName("Copy destinations").setHeading();
+
+		new Setting(containerEl)
+			.setName("Add destination")
+			.setDesc("Add a new copy destination")
+			.addButton((button) => {
+				button.setButtonText("Add").onClick(() => {
+					this.plugin.settings.destinations.push({
+						path: "",
+						description: "",
+						overwrite: false,
+					});
+					this.display();
+				});
+			});
 	}
 }
