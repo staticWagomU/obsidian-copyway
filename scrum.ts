@@ -173,109 +173,41 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "ユーザーが設定画面からコピー先を直感的に管理できるようにする",
-    status: "done",
-    pbi_id: "PBI-002",
-    subtasks: [
-      {
-        id: "ST-001",
-        title: "CopywaySettingTabクラスの型定義とモック準備",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-002",
-        title: "設定画面の基本構造を実装（display()メソッド）",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-003",
-        title: "コピー先追加UI実装（Add destinationボタン）",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-004",
-        title: "コピー先編集UI実装（パス、ディスクリプション、上書きトグル）",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-005",
-        title: "コピー先削除UI実装（削除ボタン）",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-006",
-        title: "フォルダ選択ダイアログ統合（vault.adapter.list）",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-007",
-        title: "設定永続化の統合テスト（saveSettings呼び出し確認）",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "ST-008",
-        title: "main.tsでSettingTabを登録",
-        status: "done",
-        test_file: "src/main.test.ts",
-      },
-    ],
+    goal: "",
+    status: "planning",
+    pbi_id: null,
+    subtasks: [],
   },
 
   retrospective_insights: [
-    // Sprint 1 (PBI-001: プラグイン基盤・型定義) - 完了
-    // What went well (うまくいったこと):
-    "TDDサイクル(RED-GREEN-REFACTOR)を厳密に守ることで、品質の高いコードが書けた",
-    "Obsidian APIのモック環境(createMockApp)を整備したことで、外部依存なしでテストが効率的に書けるようになった",
-    "型定義を先に定義することで、実装時の方向性が明確になり、TypeScriptの型推論が効果的に機能した",
-    "各サブタスク完了時に即座にコミットすることで、変更履歴が追いやすくなった",
-    "Definition of Doneの自動チェック(lint, typecheck, test, build)により品質が担保された",
+    // === What went well (うまくいったこと) ===
+    "[Process] TDDサイクル(RED-GREEN-REFACTOR)を厳密に守ることで、品質の高いコードが書けた",
+    "[Process] 各サブタスク完了時に即座にコミットすることで、変更履歴が追いやすくなった",
+    "[Process] Definition of Doneの自動チェック(lint, typecheck, test, build)により品質が担保された",
+    "[Tech] Obsidian APIのモック環境を整備したことで、外部依存なしでテストが効率的に書けるようになった",
+    "[Tech] 型定義を先に定義することで、実装時の方向性が明確になり、TypeScriptの型推論が効果的に機能した",
+    "[Sprint 2] Obsidian Settingクラスのメソッドチェーンパターンを効果的に活用し、設定画面の追加・編集・削除機能が完全に動作するようになった",
+    "[Sprint 2] display()メソッドの再呼び出しによる動的UI更新が正常に機能し、即時反映が実現できた",
 
-    // What could be improved (改善できること):
-    "manifest.jsonへのコマンド登録がST-006で計画されていたが、実際にはコマンド定義が含まれていなかった。Acceptance Criteriaと実装の整合性を確認する必要がある",
-    "テストファイル(types.test.ts, main.test.ts)では型の構造検証に重点が置かれているが、エッジケースのテストカバレッジを増やす余地がある",
-    "Obsidian APIモックが最小限の実装(vault, workspace)のみ。今後のPBIで必要になる可能性が高いメソッド(e.g., vault.adapter.write)を事前にモック化しておくと効率的",
+    // === What could be improved (改善できること) ===
+    "[Critical] ST-006がscrum.tsで'done'とマークされていたが実装が存在しなかった。タスク完了基準を「テストが存在、実装がテスト通過、コミット済み」に明確化する",
+    "[Process] タスク計画と実装の乖離（vault.adapter.list()のモック未使用など）を早期に検知する仕組みが必要",
+    "[Quality] Acceptance Criteriaと実装の整合性を確認するプロセスが不足。Sprint Review時の詳細な突き合わせを徹底する",
+    "[Quality] Definition of Doneの手動チェック項目（Obsidian上での実際の動作確認）が実施されていない",
+    "[Tech] エッジケースのテストカバレッジを増やす余地がある",
 
-    // Key learnings (学び):
-    "loadSettings()でObject.assign()とPartial<T>を組み合わせることで、設定の部分的な更新と後方互換性を両立できることを学んだ",
-    "Vitestのvi.spyOn()を使ったモック手法により、ObsidianのPlugin基底クラスのメソッド(loadData/saveData)の振る舞いを効果的にテストできた",
-    "型定義とテストを先に書くことで、実装が「テストを通すための最小限のコード」になり、過剰実装を防げた",
+    // === Key learnings (学び) ===
+    "[Tech] loadSettings()でObject.assign()とPartial<T>を組み合わせることで、設定の部分的な更新と後方互換性を両立できる",
+    "[Tech] Vitestのvi.spyOn()を使ったモック手法により、ObsidianのPlugin基底クラスのメソッドの振る舞いを効果的にテストできる",
+    "[Tech] Obsidian SettingクラスのDOMイベント処理では、配列のインデックスがクロージャで保持されるため、イベントハンドラ内での安全な参照チェック（if (d)）が重要",
+    "[Process] 型定義とテストを先に書くことで、実装が「テストを通すための最小限のコード」になり、過剰実装を防げる",
 
-    // Action items for next Sprint (次Sprintへのアクション):
-    "PBI-002(設定画面)では、PluginSettingTabのモックが必要になるため、事前に調査・準備する",
-    "コマンド登録の実装(addCommand)は次Sprint以降で必要になるため、manifest.jsonとmain.tsの両方で整合性を保つ方法を検討する",
-    "テストの記述パターン(describe/test構造、モックの作り方)が確立されたので、ドキュメント化してチーム知識として共有する",
-
-    // Sprint 2 (PBI-002: 設定画面) - 完了（条件付き）
-    // What went well (うまくいったこと):
-    "CopywaySettingTabの実装により、コピー先の追加・編集・削除機能が完全に動作するようになった",
-    "Obsidian Settingクラスのメソッドチェーンパターン（addText, addToggle, addButton）を効果的に活用できた",
-    "設定変更時の永続化処理（saveSettings呼び出し）が各イベントハンドラで一貫して実装された",
-    "display()メソッドの再呼び出しによる動的UI更新が正常に機能し、削除・追加時の即時反映が実現できた",
-    "14個のテストケースで主要機能を網羅し、Definition of Doneの自動チェックが完全合格した",
-
-    // What could be improved (改善できること):
-    "ST-006「フォルダ選択ダイアログ」がscrum.tsで'done'とマークされていたが、実装とテストが存在しなかった。タスク完了の定義を厳密にする必要がある",
-    "受入基準「フォルダ選択ダイアログでパスを選択できる」が未達成（5/6達成）。現状ではパス手動入力のみで、UXとして改善余地がある",
-    "vault.adapter.list()のモック準備はされていたが（settings-tab.test.ts:14）、実際には使用されなかった。タスク計画と実装の乖離を早期に検知すべき",
-    "手動テスト（Obsidian上での動作確認）がまだ実施されていない。Definition of Doneの手動チェック項目を次Sprintで実施する必要がある",
-
-    // Key learnings (学び):
-    "Obsidian SettingクラスのDOMイベント処理では、配列のインデックスがクロージャで保持されるため、イベントハンドラ内での安全な参照チェック（if (d)）が重要だと学んだ",
-    "display()メソッドでcontainerEl.empty()を呼ぶことで、既存UIを完全にクリアしてから再描画するパターンが、状態同期の簡潔な実装方法として有効",
-    "Sprint Review時に実装とAcceptance Criteriaの詳細な突き合わせが重要。表面的なタスク完了マークだけでは不十分",
-
-    // Action items for next Sprint (次Sprintへのアクション):
-    "PBI-007として「フォルダ選択ダイアログ」を新規作成し、vault.adapter.list()を使ったフォルダ一覧取得とモーダル選択UIを実装する（任意機能、UX改善）",
-    "Definition of Doneの手動チェック項目を実施: Obsidian上での実際の動作確認、エラーメッセージ表示確認",
-    "タスク完了基準を明確化: 「テストが存在し、実装がテストを通過し、コミットされた」を'done'の条件とする",
-    "次Sprint開始前に、すべてのサブタスクの受入基準を具体的に定義し、チーム内で合意を得る",
+    // === Action items (アクションアイテム) ===
+    "[Next Sprint] タスク完了基準の徹底: すべてのサブタスクに対し、実装・テスト・コミットの3点セットを確認してから'done'にする",
+    "[Next Sprint] Sprint Planning時に、各サブタスクの受入基準を具体的に定義し、チーム内で合意を得る",
+    "[Next Sprint] Sprint Review時に、Acceptance Criteriaと実装の突き合わせチェックリストを使用する",
+    "[Backlog] PBI-007として「フォルダ選択ダイアログ」を新規作成（任意機能、UX改善）",
+    "[Backlog] Definition of Doneの手動チェック項目を実施する専用タスクを次Sprint以降で計画する",
   ],
 };
 
