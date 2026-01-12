@@ -103,7 +103,7 @@ const dashboard: ScrumDashboard = {
       title: "設定画面",
       description:
         "ユーザーとして、コピー先を追加・編集・削除できることで、自分のワークフローに合わせた設定ができる",
-      status: "draft",
+      status: "ready",
       acceptance_criteria: [
         "設定画面でコピー先を追加できる",
         "設定画面でコピー先を編集できる（パス、ディスクリプション）",
@@ -112,6 +112,7 @@ const dashboard: ScrumDashboard = {
         "上書きモードのトグルが機能する",
         "設定が永続化される",
       ],
+      story_points: 5,
     },
     {
       id: "PBI-003",
