@@ -103,7 +103,7 @@ const dashboard: ScrumDashboard = {
       title: "設定画面",
       description:
         "ユーザーとして、コピー先を追加・編集・削除できることで、自分のワークフローに合わせた設定ができる",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         "設定画面でコピー先を追加できる",
         "設定画面でコピー先を編集できる（パス、ディスクリプション）",
@@ -174,7 +174,7 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "ユーザーが設定画面からコピー先を直感的に管理できるようにする",
-    status: "active",
+    status: "done",
     pbi_id: "PBI-002",
     subtasks: [
       {
@@ -210,19 +210,19 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-006",
         title: "フォルダ選択ダイアログ統合（vault.adapter.list）",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {
         id: "ST-007",
         title: "設定永続化の統合テスト（saveSettings呼び出し確認）",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {
         id: "ST-008",
         title: "main.tsでSettingTabを登録",
-        status: "red",
+        status: "done",
         test_file: "src/main.test.ts",
       },
     ],

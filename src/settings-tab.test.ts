@@ -227,4 +227,25 @@ describe("CopywaySettingTab", () => {
 			expect(plugin.settings.destinations[0]?.path).toBe("test2");
 		});
 	});
+
+	describe("ST-007: 設定永続化の統合テスト（saveSettings呼び出し確認）", () => {
+		test("destination追加後にsaveSettingsが呼ばれる", async () => {
+			const saveSettingsSpy = vi.spyOn(plugin, "saveSettings");
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			// Add destinationボタンをクリック
+			const addButton = settingTab.containerEl.querySelector("button");
+			addButton?.click();
+
+			// saveSettingsが呼ばれることを確認
+			// display()内で非同期処理は行わないため、即座にチェック可能
+			await vi.waitFor(() => {
+				expect(saveSettingsSpy).toHaveBeenCalled();
+			});
+		});
+	});
 });

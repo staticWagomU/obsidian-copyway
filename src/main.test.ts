@@ -156,4 +156,14 @@ describe("CopywayPlugin", () => {
 			});
 		});
 	});
+
+	describe("ST-008: main.tsでSettingTabを登録", () => {
+		test("onload()でaddSettingTabが呼ばれる", async () => {
+			const addSettingTabSpy = vi.spyOn(plugin, "addSettingTab");
+
+			await plugin.onload();
+
+			expect(addSettingTabSpy).toHaveBeenCalledOnce();
+		});
+	});
 });

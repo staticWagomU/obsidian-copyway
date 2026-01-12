@@ -17,6 +17,8 @@ export class Plugin {
 
 	async saveData(_data: unknown): Promise<void> {}
 
+	addSettingTab(_settingTab: PluginSettingTab): void {}
+
 	onload(): void | Promise<void> {}
 	onunload(): void {}
 }

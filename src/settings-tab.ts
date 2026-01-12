@@ -30,32 +30,42 @@ export class CopywaySettingTab extends PluginSettingTab {
 					text
 						.setPlaceholder("Path")
 						.setValue(dest.path)
-						.onChange((value) => {
+						.onChange(async (value) => {
 							const d = this.plugin.settings.destinations[i];
-							if (d) d.path = value;
+							if (d) {
+								d.path = value;
+								await this.plugin.saveSettings();
+							}
 						});
 				})
 				.addText((text) => {
 					text
 						.setPlaceholder("Description")
 						.setValue(dest.description)
-						.onChange((value) => {
+						.onChange(async (value) => {
 							const d = this.plugin.settings.destinations[i];
-							if (d) d.description = value;
+							if (d) {
+								d.description = value;
+								await this.plugin.saveSettings();
+							}
 						});
 				})
 				.addToggle((toggle) => {
-					toggle.setValue(dest.overwrite).onChange((value) => {
+					toggle.setValue(dest.overwrite).onChange(async (value) => {
 						const d = this.plugin.settings.destinations[i];
-						if (d) d.overwrite = value;
+						if (d) {
+							d.overwrite = value;
+							await this.plugin.saveSettings();
+						}
 					});
 				})
 				.addButton((button) => {
 					button
 						.setButtonText("Delete")
 						.setWarning()
-						.onClick(() => {
+						.onClick(async () => {
 							this.plugin.settings.destinations.splice(i, 1);
+							await this.plugin.saveSettings();
 							this.display();
 						});
 				});
@@ -65,12 +75,13 @@ export class CopywaySettingTab extends PluginSettingTab {
 			.setName("Add destination")
 			.setDesc("Add a new copy destination")
 			.addButton((button) => {
-				button.setButtonText("Add").onClick(() => {
+				button.setButtonText("Add").onClick(async () => {
 					this.plugin.settings.destinations.push({
 						path: "",
 						description: "",
 						overwrite: false,
 					});
+					await this.plugin.saveSettings();
 					this.display();
 				});
 			});

@@ -1,5 +1,6 @@
 import { Plugin } from "obsidian";
 import type { CopywaySettings } from "./types";
+import { CopywaySettingTab } from "./settings-tab";
 
 /**
  * デフォルト設定
@@ -17,6 +18,11 @@ export default class CopywayPlugin extends Plugin {
 	async onload() {
 		// プラグインの初期化処理
 		console.log("Loading Copyway plugin");
+
+		await this.loadSettings();
+
+		// 設定タブを追加
+		this.addSettingTab(new CopywaySettingTab(this.app, this));
 	}
 
 	onunload() {
