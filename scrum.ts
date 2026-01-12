@@ -203,7 +203,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-005",
         title: "設定の保存機能を実装する(saveSettings)",
-        status: "red",
+        status: "done",
         test_file: "src/main.test.ts",
       },
       {

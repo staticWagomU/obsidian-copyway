@@ -34,4 +34,11 @@ export default class CopywayPlugin extends Plugin {
 			(await this.loadData()) as Partial<CopywaySettings>,
 		);
 	}
+
+	/**
+	 * 設定を保存する
+	 */
+	async saveSettings(): Promise<void> {
+		await this.saveData(this.settings);
+	}
 }

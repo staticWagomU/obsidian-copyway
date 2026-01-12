@@ -105,4 +105,51 @@ describe("CopywayPlugin", () => {
 			});
 		});
 	});
+
+	describe("設定の保存", () => {
+		test("saveSettingsメソッドが存在する", () => {
+			expect(plugin.saveSettings).toBeDefined();
+			expect(typeof plugin.saveSettings).toBe("function");
+		});
+
+		test("saveSettingsが現在の設定を保存する", async () => {
+			plugin.settings = {
+				destinations: [
+					{
+						path: "/save/path",
+						description: "Save test",
+						overwrite: false,
+					},
+				],
+			};
+
+			const saveDataSpy = vi.spyOn(plugin, "saveData").mockResolvedValue();
+
+			await plugin.saveSettings();
+
+			expect(saveDataSpy).toHaveBeenCalledWith({
+				destinations: [
+					{
+						path: "/save/path",
+						description: "Save test",
+						overwrite: false,
+					},
+				],
+			});
+		});
+
+		test("saveSettingsが空の設定を保存する", async () => {
+			plugin.settings = {
+				destinations: [],
+			};
+
+			const saveDataSpy = vi.spyOn(plugin, "saveData").mockResolvedValue();
+
+			await plugin.saveSettings();
+
+			expect(saveDataSpy).toHaveBeenCalledWith({
+				destinations: [],
+			});
+		});
+	});
 });
