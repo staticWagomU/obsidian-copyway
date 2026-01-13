@@ -209,8 +209,8 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-6.1",
         title: "コマンド登録とコールバック構造の実装（RED）",
-        status: "red",
-        test_file: "src/commands/CopyFileCommand.test.ts",
+        status: "done",
+        test_file: "src/commands/copy-file-command.test.ts",
       },
       {
         id: "ST-6.2",
