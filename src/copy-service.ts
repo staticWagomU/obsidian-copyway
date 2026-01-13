@@ -72,4 +72,52 @@ export class CopyService implements ICopyService {
 			path: targetPath,
 		};
 	}
+
+	/**
+	 * リネームモードでファイルをコピー
+	 * 同名ファイルが存在する場合、連番（_1, _2, ...）を付与してコピーする
+	 */
+	async copyWithRename(
+		sourceContent: string,
+		sourceName: string,
+		destination: CopyDestination,
+	): Promise<CopyResult> {
+		const { baseName, extension } = this.splitFileName(sourceName);
+		let counter = 0;
+		let targetPath = `${destination.path}/${sourceName}`;
+
+		// 利用可能なファイル名を見つけるまでループ
+		while (await this.vault.adapter.exists(targetPath)) {
+			counter++;
+			const newFileName = `${baseName}_${counter}${extension}`;
+			targetPath = `${destination.path}/${newFileName}`;
+		}
+
+		// ファイルを書き込み
+		await this.vault.adapter.write(targetPath, sourceContent);
+
+		return {
+			success: true,
+			path: targetPath,
+		};
+	}
+
+	/**
+	 * ファイル名を基本名と拡張子に分割する
+	 * 例: "file.md" -> { baseName: "file", extension: ".md" }
+	 * 例: "file.test.md" -> { baseName: "file.test", extension: ".md" }
+	 */
+	private splitFileName(fileName: string): {
+		baseName: string;
+		extension: string;
+	} {
+		const lastDotIndex = fileName.lastIndexOf(".");
+		if (lastDotIndex === -1) {
+			return { baseName: fileName, extension: "" };
+		}
+		return {
+			baseName: fileName.slice(0, lastDotIndex),
+			extension: fileName.slice(lastDotIndex),
+		};
+	}
 }

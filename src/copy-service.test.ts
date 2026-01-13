@@ -154,3 +154,109 @@ describe("CopyService - 上書きモード", () => {
 		expect(content).toBe("Old Content");
 	});
 });
+
+describe("CopyService - リネームモード（連番付与）", () => {
+	let vault: Vault;
+	let service: CopyService;
+	let destination: CopyDestination;
+
+	beforeEach(() => {
+		vault = new Vault();
+		service = new CopyService(vault);
+		destination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+		};
+	});
+
+	it("同名ファイルが存在する場合、_1を付与してコピーできる", async () => {
+		// 既存ファイルを作成
+		await vault.adapter.write("dest/file.md", "Original");
+
+		// リネームコピー
+		const result = await service.copyWithRename(
+			"New Content",
+			"file.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/file_1.md");
+		}
+
+		// 両方のファイルが存在することを確認
+		expect(await vault.adapter.exists("dest/file.md")).toBe(true);
+		expect(await vault.adapter.exists("dest/file_1.md")).toBe(true);
+	});
+
+	it("_1が存在する場合、_2を付与してコピーできる", async () => {
+		// 既存ファイルを作成
+		await vault.adapter.write("dest/note.md", "Original");
+		await vault.adapter.write("dest/note_1.md", "First Copy");
+
+		// リネームコピー
+		const result = await service.copyWithRename(
+			"Second Copy",
+			"note.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/note_2.md");
+		}
+	});
+
+	it("_1, _2, _3まで存在する場合、_4を付与してコピーできる", async () => {
+		// 既存ファイルを作成
+		await vault.adapter.write("dest/doc.md", "Original");
+		await vault.adapter.write("dest/doc_1.md", "Copy 1");
+		await vault.adapter.write("dest/doc_2.md", "Copy 2");
+		await vault.adapter.write("dest/doc_3.md", "Copy 3");
+
+		// リネームコピー
+		const result = await service.copyWithRename(
+			"Copy 4",
+			"doc.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/doc_4.md");
+		}
+	});
+
+	it("同名ファイルが存在しない場合、元のファイル名でコピーできる", async () => {
+		// リネームコピー（既存ファイルなし）
+		const result = await service.copyWithRename(
+			"Content",
+			"new.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/new.md");
+		}
+	});
+
+	it("拡張子が複数ドットを含む場合でも正しく処理できる", async () => {
+		// 既存ファイルを作成
+		await vault.adapter.write("dest/file.test.md", "Original");
+
+		// リネームコピー
+		const result = await service.copyWithRename(
+			"New Content",
+			"file.test.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/file.test_1.md");
+		}
+	});
+});

@@ -199,7 +199,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-012",
         title: "リネームモード時の連番付与機能を実装（_1, _2形式）",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {
