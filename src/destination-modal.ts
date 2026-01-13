@@ -55,6 +55,11 @@ export class DestinationModal extends Modal {
 		const { contentEl } = this;
 		const items = contentEl.querySelectorAll(".destination-item");
 
+		// モーダルが閉じられている場合は処理しない
+		if (items.length === 0) {
+			return;
+		}
+
 		// 現在の選択を解除
 		items[this.selectedIndex].classList.remove("is-selected");
 
@@ -63,44 +68,28 @@ export class DestinationModal extends Modal {
 		items[this.selectedIndex].classList.add("is-selected");
 	}
 
-	private confirmSelection(index: number): void {
-		// 選択を更新
-		this.updateSelection(index);
-
+	private confirmSelection(): void {
 		// コールバックを実行してモーダルを閉じる
 		this.onSelect(this.destinations[this.selectedIndex]);
 		this.close();
 	}
 
 	private handleKeyDown(event: KeyboardEvent): void {
-		const { contentEl } = this;
-		const items = contentEl.querySelectorAll(".destination-item");
-
-		// モーダルが閉じられた後はイベントを処理しない
-		if (items.length === 0) {
-			return;
-		}
-
 		switch (event.key) {
 			case "ArrowDown":
 				if (this.selectedIndex < this.destinations.length - 1) {
-					items[this.selectedIndex].classList.remove("is-selected");
-					this.selectedIndex++;
-					items[this.selectedIndex].classList.add("is-selected");
+					this.updateSelection(this.selectedIndex + 1);
 				}
 				break;
 
 			case "ArrowUp":
 				if (this.selectedIndex > 0) {
-					items[this.selectedIndex].classList.remove("is-selected");
-					this.selectedIndex--;
-					items[this.selectedIndex].classList.add("is-selected");
+					this.updateSelection(this.selectedIndex - 1);
 				}
 				break;
 
 			case "Enter":
-				this.onSelect(this.destinations[this.selectedIndex]);
-				this.close();
+				this.confirmSelection();
 				break;
 
 			case "Escape":

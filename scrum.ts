@@ -230,13 +230,13 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-004-9",
         title: "コードのリファクタリングと最適化（REFACTOR）",
-        status: "red",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
       {
         id: "ST-004-10",
         title: "Definition of Done実施と最終確認（DONE）",
-        status: "red",
+        status: "refactor",
         test_file: "src/destination-modal.test.ts",
       },
     ],
