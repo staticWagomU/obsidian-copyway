@@ -174,53 +174,10 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "ファイルコピー処理を確実に実行できるCopyServiceを実装し、上書きとリネームの両方に対応する",
-    status: "done",
-    pbi_id: "PBI-003",
-    subtasks: [
-      {
-        id: "ST-009",
-        title: "Result型とCopyServiceの基本型定義を作成",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "ST-010",
-        title: "基本的なファイルコピー機能を実装（正常系）",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "ST-011",
-        title: "上書きモード時の同名ファイル処理を実装",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "ST-012",
-        title: "リネームモード時の連番付与機能を実装（_1, _2形式）",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "ST-013",
-        title: "コピー先ディレクトリ存在チェックとエラー処理を実装",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "ST-014",
-        title: "I/Oエラーハンドリングを実装",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "ST-015",
-        title: "Obsidian Vault Adapterモックを拡張（read/write/exists/stat）",
-        status: "done",
-        test_file: "src/__mocks__/obsidian.ts",
-      },
-    ],
+    goal: "",
+    status: "planning",
+    pbi_id: null,
+    subtasks: [],
   },
 
   retrospective_insights: [
@@ -228,26 +185,31 @@ const dashboard: ScrumDashboard = {
     "[Process] TDDサイクル(RED-GREEN-REFACTOR)を厳密に守ることで、品質の高いコードが書けた",
     "[Process] 各サブタスク完了時に即座にコミットすることで、変更履歴が追いやすくなった",
     "[Process] Definition of Doneの自動チェック(lint, typecheck, test, build)により品質が担保された",
-    "[Tech] Obsidian APIのモック環境を整備したことで、外部依存なしでテストが効率的に書けるようになった",
+    "[Tech] Obsidian APIのモック環境を整備し、外部依存なしで効率的なテスト環境が実現できた（Vault Adapter拡張含む）",
     "[Tech] 型定義を先に定義することで、実装時の方向性が明確になり、TypeScriptの型推論が効果的に機能した",
-    "[Sprint 2] Obsidian Settingクラスのメソッドチェーンパターンを効果的に活用し、設定画面の追加・編集・削除機能が完全に動作するようになった",
-    "[Sprint 2] display()メソッドの再呼び出しによる動的UI更新が正常に機能し、即時反映が実現できた",
+    "[Sprint 2] Obsidian Settingクラスのメソッドチェーンパターンを効果的に活用し、設定画面機能が完全に動作した",
+    "[Sprint 3] Sprint 2の学びを適用し、全サブタスクで実装・テスト・コミットの検証を実施。「ゴーストdone」が0件になった",
+    "[Sprint 3] Acceptance Criteria達成率が100%（Sprint 2: 83%→Sprint 3: 100%）に向上し、品質が大幅に改善された",
+    "[Sprint 3] Result型パターンの導入により、エラーハンドリングが型安全かつ明示的になった",
+    "[Sprint 3] CopyServiceを純粋なサービスとして設計し、Dependency Injectionを採用したことでテスタビリティが向上した",
+    "[Sprint 3] テスト数が31から59に増加（91%増）し、包括的なカバレッジを達成した",
 
     // === What could be improved (改善できること) ===
-    "[Critical] ST-006がscrum.tsで'done'とマークされていたが実装が存在しなかった。タスク完了基準を「テストが存在、実装がテスト通過、コミット済み」に明確化する",
-    "[Process] タスク計画と実装の乖離（vault.adapter.list()のモック未使用など）を早期に検知する仕組みが必要",
-    "[Quality] Acceptance Criteriaと実装の整合性を確認するプロセスが不足。Sprint Review時の詳細な突き合わせを徹底する",
     "[Quality] Definition of Doneの手動チェック項目（Obsidian上での実際の動作確認）が実施されていない",
-    "[Tech] エッジケースのテストカバレッジを増やす余地がある",
+    "[Tech] エッジケースのテストカバレッジをさらに増やす余地がある",
+    "[Process] 長期的な技術的負債の管理方法（アーキテクチャ改善など）を検討する",
 
     // === Key learnings (学び) ===
     "[Tech] loadSettings()でObject.assign()とPartial<T>を組み合わせることで、設定の部分的な更新と後方互換性を両立できる",
     "[Tech] Vitestのvi.spyOn()を使ったモック手法により、ObsidianのPlugin基底クラスのメソッドの振る舞いを効果的にテストできる",
     "[Tech] Obsidian SettingクラスのDOMイベント処理では、配列のインデックスがクロージャで保持されるため、イベントハンドラ内での安全な参照チェック（if (d)）が重要",
     "[Process] 型定義とテストを先に書くことで、実装が「テストを通すための最小限のコード」になり、過剰実装を防げる",
+    "[Sprint 3] Result<T, E>型の導入により、成功・失敗の両方のパスを明示的に扱え、エラー処理の見落としが減少する",
+    "[Sprint 3] 依存性注入パターンにより、Obsidian固有のAPIに依存せず単体テストが可能になり、テストの実行速度と信頼性が向上した",
+    "[Sprint 3] タスク完了基準の明確化（実装・テスト・コミットの3点セット）が、品質向上に直接貢献することが証明された",
 
     // === Action items (アクションアイテム) ===
-    "[Next Sprint] タスク完了基準の徹底: すべてのサブタスクに対し、実装・テスト・コミットの3点セットを確認してから'done'にする",
+    "[Continuous] タスク完了基準の徹底: すべてのサブタスクに対し、実装・テスト・コミットの3点セットを確認してから'done'にする",
     "[Next Sprint] Sprint Planning時に、各サブタスクの受入基準を具体的に定義し、チーム内で合意を得る",
     "[Next Sprint] Sprint Review時に、Acceptance Criteriaと実装の突き合わせチェックリストを使用する",
     "[Backlog] PBI-007として「フォルダ選択ダイアログ」を新規作成（任意機能、UX改善）",
