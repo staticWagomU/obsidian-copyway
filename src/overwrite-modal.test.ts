@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { describe, it, expect, vi } from "vitest";
 import { OverwriteModal } from "./overwrite-modal";
 import type { App } from "obsidian";
 
@@ -75,7 +76,7 @@ describe("OverwriteModal", () => {
 			const onResult = vi.fn();
 			const modal = new OverwriteModal(mockApp, "test.md", onResult);
 
-			let overwriteClickHandler: (() => void) | null = null;
+			let overwriteClickHandler: (() => void) | undefined;
 
 			const mockContentEl = {
 				empty: vi.fn(),
@@ -90,16 +91,18 @@ describe("OverwriteModal", () => {
 					return mockEl;
 				}),
 			};
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.contentEl = mockContentEl;
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.close = vi.fn();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).contentEl = mockContentEl;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).close = vi.fn();
 
 			modal.onOpen();
 
 			// Overwriteボタンのクリックハンドラを実行
 			expect(overwriteClickHandler).toBeDefined();
-			overwriteClickHandler?.();
+			if (overwriteClickHandler) {
+				overwriteClickHandler();
+			}
 
 			expect(onResult).toHaveBeenCalledWith("overwrite");
 		});
@@ -108,7 +111,7 @@ describe("OverwriteModal", () => {
 			const onResult = vi.fn();
 			const modal = new OverwriteModal(mockApp, "test.md", onResult);
 
-			let overwriteClickHandler: (() => void) | null = null;
+			let overwriteClickHandler: (() => void) | undefined;
 
 			const mockContentEl = {
 				empty: vi.fn(),
@@ -123,14 +126,16 @@ describe("OverwriteModal", () => {
 					return mockEl;
 				}),
 			};
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.contentEl = mockContentEl;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).contentEl = mockContentEl;
 			const closeSpy = vi.fn();
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.close = closeSpy;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).close = closeSpy;
 
 			modal.onOpen();
-			overwriteClickHandler?.();
+			if (overwriteClickHandler) {
+				overwriteClickHandler();
+			}
 
 			expect(closeSpy).toHaveBeenCalled();
 		});
@@ -141,7 +146,7 @@ describe("OverwriteModal", () => {
 			const onResult = vi.fn();
 			const modal = new OverwriteModal(mockApp, "test.md", onResult);
 
-			let renameClickHandler: (() => void) | null = null;
+			let renameClickHandler: (() => void) | undefined;
 
 			const mockContentEl = {
 				empty: vi.fn(),
@@ -156,16 +161,18 @@ describe("OverwriteModal", () => {
 					return mockEl;
 				}),
 			};
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.contentEl = mockContentEl;
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.close = vi.fn();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).contentEl = mockContentEl;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).close = vi.fn();
 
 			modal.onOpen();
 
 			// Renameボタンのクリックハンドラを実行
 			expect(renameClickHandler).toBeDefined();
-			renameClickHandler?.();
+			if (renameClickHandler) {
+				renameClickHandler();
+			}
 
 			expect(onResult).toHaveBeenCalledWith("rename");
 		});
@@ -174,7 +181,7 @@ describe("OverwriteModal", () => {
 			const onResult = vi.fn();
 			const modal = new OverwriteModal(mockApp, "test.md", onResult);
 
-			let renameClickHandler: (() => void) | null = null;
+			let renameClickHandler: (() => void) | undefined;
 
 			const mockContentEl = {
 				empty: vi.fn(),
@@ -189,14 +196,16 @@ describe("OverwriteModal", () => {
 					return mockEl;
 				}),
 			};
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.contentEl = mockContentEl;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).contentEl = mockContentEl;
 			const closeSpy = vi.fn();
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.close = closeSpy;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).close = closeSpy;
 
 			modal.onOpen();
-			renameClickHandler?.();
+			if (renameClickHandler) {
+				renameClickHandler();
+			}
 
 			expect(closeSpy).toHaveBeenCalled();
 		});
@@ -207,7 +216,7 @@ describe("OverwriteModal", () => {
 			const onResult = vi.fn();
 			const modal = new OverwriteModal(mockApp, "test.md", onResult);
 
-			let cancelClickHandler: (() => void) | null = null;
+			let cancelClickHandler: (() => void) | undefined;
 
 			const mockContentEl = {
 				empty: vi.fn(),
@@ -222,16 +231,18 @@ describe("OverwriteModal", () => {
 					return mockEl;
 				}),
 			};
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.contentEl = mockContentEl;
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.close = vi.fn();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).contentEl = mockContentEl;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).close = vi.fn();
 
 			modal.onOpen();
 
 			// Cancelボタンのクリックハンドラを実行
 			expect(cancelClickHandler).toBeDefined();
-			cancelClickHandler?.();
+			if (cancelClickHandler) {
+				cancelClickHandler();
+			}
 
 			expect(onResult).toHaveBeenCalledWith("cancel");
 		});
@@ -240,7 +251,7 @@ describe("OverwriteModal", () => {
 			const onResult = vi.fn();
 			const modal = new OverwriteModal(mockApp, "test.md", onResult);
 
-			let cancelClickHandler: (() => void) | null = null;
+			let cancelClickHandler: (() => void) | undefined;
 
 			const mockContentEl = {
 				empty: vi.fn(),
@@ -255,14 +266,16 @@ describe("OverwriteModal", () => {
 					return mockEl;
 				}),
 			};
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.contentEl = mockContentEl;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).contentEl = mockContentEl;
 			const closeSpy = vi.fn();
-			// @ts-expect-error - モックのため型エラーを無視
-			modal.close = closeSpy;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(modal as any).close = closeSpy;
 
 			modal.onOpen();
-			cancelClickHandler?.();
+			if (cancelClickHandler) {
+				cancelClickHandler();
+			}
 
 			expect(closeSpy).toHaveBeenCalled();
 		});
