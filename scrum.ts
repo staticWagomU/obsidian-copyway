@@ -148,7 +148,7 @@ const dashboard: ScrumDashboard = {
       title: "上書き確認ダイアログ",
       description:
         "ユーザーとして、同名ファイル存在時に選択肢が表示されることで、誤ってファイルを失わない",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         "Overwriteボタンで上書きコピーが実行される",
         "Renameボタンでリネームコピーが実行される",
@@ -177,43 +177,43 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "同名ファイル存在時のユーザー選択機能を実装し、誤上書きを防止する",
-    status: "active",
+    status: "done",
     pbi_id: "PBI-005",
     subtasks: [
       {
         id: "ST-5.1",
         title: "OverwriteModal型定義とテスト環境構築（RED）",
-        status: "green",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
         id: "ST-5.2",
         title: "OverwriteModalの基本表示機能実装（GREEN）",
-        status: "green",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
         id: "ST-5.3",
         title: "Overwriteボタン動作のテストと実装（RED→GREEN）",
-        status: "green",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
         id: "ST-5.4",
         title: "Renameボタン動作のテストと実装（RED→GREEN）",
-        status: "green",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
         id: "ST-5.5",
         title: "Cancelボタン動作のテストと実装（RED→GREEN）",
-        status: "green",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
         id: "ST-5.6",
         title: "ファイル名表示機能のテストと実装（RED→GREEN）",
-        status: "green",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
