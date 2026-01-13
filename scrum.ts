@@ -183,7 +183,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-5.1",
         title: "OverwriteModal型定義とテスト環境構築（RED）",
-        status: "red",
+        status: "green",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
