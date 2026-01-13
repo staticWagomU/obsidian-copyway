@@ -61,17 +61,20 @@ export class DestinationModal extends Modal {
 		}
 
 		// 現在の選択を解除
-		items[this.selectedIndex].classList.remove("is-selected");
+		items[this.selectedIndex]?.classList.remove("is-selected");
 
 		// 新しい項目を選択（視覚的な変更のみ）
 		this.selectedIndex = index;
-		items[this.selectedIndex].classList.add("is-selected");
+		items[this.selectedIndex]?.classList.add("is-selected");
 	}
 
 	private confirmSelection(): void {
-		// コールバックを実行してモーダルを閉じる
-		this.onSelect(this.destinations[this.selectedIndex]);
-		this.close();
+		const selected = this.destinations[this.selectedIndex];
+		if (selected) {
+			// コールバックを実行してモーダルを閉じる
+			this.onSelect(selected);
+			this.close();
+		}
 	}
 
 	private handleKeyDown(event: KeyboardEvent): void {

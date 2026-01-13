@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { describe, it, expect, vi } from "vitest";
 import { DestinationModal } from "./destination-modal";
 import type { CopyDestination } from "./types";
@@ -21,10 +24,7 @@ describe("DestinationModal", () => {
 				{ path: "/path/to/dest1", description: "Destination 1", overwrite: false },
 				{ path: "/path/to/dest2", description: "Destination 2", overwrite: true },
 			];
-			let selectedDestination: CopyDestination | null = null;
-			const onSelect = (dest: CopyDestination) => {
-				selectedDestination = dest;
-			};
+			const onSelect = () => {};
 
 			const modal = new DestinationModal({} as any, destinations, onSelect);
 
@@ -44,8 +44,8 @@ describe("DestinationModal", () => {
 
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 			expect(items).toHaveLength(2);
-			expect(items[0].textContent).toBe("Work notes");
-			expect(items[1].textContent).toBe("Personal vault");
+			expect(items[0]!.textContent).toBe("Work notes");
+			expect(items[1]!.textContent).toBe("Personal vault");
 
 			// パスは表示されない
 			expect(modal.contentEl.textContent).not.toContain("/path/to/dest1");
@@ -62,8 +62,8 @@ describe("DestinationModal", () => {
 			modal.open();
 
 			const items = modal.contentEl.querySelectorAll(".destination-item");
-			expect(items[0].classList.contains("is-selected")).toBe(true);
-			expect(items[1].classList.contains("is-selected")).toBe(false);
+			expect(items[0]!.classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(false);
 		});
 	});
 
@@ -81,17 +81,17 @@ describe("DestinationModal", () => {
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
 			// 最初は0番目が選択
-			expect(items[0].classList.contains("is-selected")).toBe(true);
+			expect(items[0]!.classList.contains("is-selected")).toBe(true);
 
 			// ↓キーで1番目に移動
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[0].classList.contains("is-selected")).toBe(false);
-			expect(items[1].classList.contains("is-selected")).toBe(true);
+			expect(items[0]!.classList.contains("is-selected")).toBe(false);
+			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 
 			// さらに↓キーで2番目に移動
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[1].classList.contains("is-selected")).toBe(false);
-			expect(items[2].classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(false);
+			expect(items[2]!.classList.contains("is-selected")).toBe(true);
 		});
 
 		it("↑キーで前の項目を選択する", () => {
@@ -109,17 +109,17 @@ describe("DestinationModal", () => {
 			// まず↓キーで2番目に移動
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[2].classList.contains("is-selected")).toBe(true);
+			expect(items[2]!.classList.contains("is-selected")).toBe(true);
 
 			// ↑キーで1番目に戻る
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
-			expect(items[2].classList.contains("is-selected")).toBe(false);
-			expect(items[1].classList.contains("is-selected")).toBe(true);
+			expect(items[2]!.classList.contains("is-selected")).toBe(false);
+			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 
 			// さらに↑キーで0番目に戻る
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
-			expect(items[1].classList.contains("is-selected")).toBe(false);
-			expect(items[0].classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(false);
+			expect(items[0]!.classList.contains("is-selected")).toBe(true);
 		});
 
 		it("最後の項目で↓キーを押しても変化しない", () => {
@@ -135,11 +135,11 @@ describe("DestinationModal", () => {
 
 			// 1番目に移動
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[1].classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 
 			// さらに↓キーを押しても1番目のまま
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[1].classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 		});
 
 		it("最初の項目で↑キーを押しても変化しない", () => {
@@ -154,11 +154,11 @@ describe("DestinationModal", () => {
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
 			// 最初は0番目が選択
-			expect(items[0].classList.contains("is-selected")).toBe(true);
+			expect(items[0]!.classList.contains("is-selected")).toBe(true);
 
 			// ↑キーを押しても0番目のまま
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
-			expect(items[0].classList.contains("is-selected")).toBe(true);
+			expect(items[0]!.classList.contains("is-selected")).toBe(true);
 		});
 
 		it("Enterキーで選択された項目のコールバックが実行され、モーダルが閉じる", () => {
@@ -214,14 +214,14 @@ describe("DestinationModal", () => {
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
 			// 最初は0番目が選択
-			expect(items[0].classList.contains("is-selected")).toBe(true);
+			expect(items[0]!.classList.contains("is-selected")).toBe(true);
 
 			// 2番目をクリック
-			items[2].dispatchEvent(new MouseEvent("click"));
+			items[2]!.dispatchEvent(new MouseEvent("click"));
 
 			// 2番目が選択される
-			expect(items[0].classList.contains("is-selected")).toBe(false);
-			expect(items[2].classList.contains("is-selected")).toBe(true);
+			expect(items[0]!.classList.contains("is-selected")).toBe(false);
+			expect(items[2]!.classList.contains("is-selected")).toBe(true);
 		});
 
 		it("項目をクリックしてEnterでコールバックが実行され、モーダルが閉じる", () => {
@@ -238,10 +238,10 @@ describe("DestinationModal", () => {
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
 			// 1番目をクリック
-			items[1].dispatchEvent(new MouseEvent("click"));
+			items[1]!.dispatchEvent(new MouseEvent("click"));
 
 			// クリック後は選択されるがまだコールバックは呼ばれない
-			expect(items[1].classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 			expect(onSelect).not.toHaveBeenCalled();
 
 			// Enterキーで確定
@@ -265,13 +265,13 @@ describe("DestinationModal", () => {
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
 			// 1番目をクリック
-			items[1].dispatchEvent(new MouseEvent("click"));
-			expect(items[1].classList.contains("is-selected")).toBe(true);
+			items[1]!.dispatchEvent(new MouseEvent("click"));
+			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 
 			// ↓キーで2番目に移動
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[1].classList.contains("is-selected")).toBe(false);
-			expect(items[2].classList.contains("is-selected")).toBe(true);
+			expect(items[1]!.classList.contains("is-selected")).toBe(false);
+			expect(items[2]!.classList.contains("is-selected")).toBe(true);
 
 			// Enterキーで選択
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));

@@ -134,7 +134,7 @@ const dashboard: ScrumDashboard = {
       title: "コピー先選択モーダル",
       description:
         "ユーザーとして、複数のコピー先から選択できることで、目的に応じた場所にコピーできる",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         "ディスクリプションのみが表示される（パス非表示）",
         "キーボード操作（↑↓選択、Enter決定、Esc閉じる）が動作する",
@@ -176,7 +176,7 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "ユーザーが複数のコピー先から直感的に選択できるモーダルUIを実装し、キーボード操作とクリック操作の両方で快適に利用できるようにする",
-    status: "active",
+    status: "done",
     pbi_id: "PBI-004",
     subtasks: [
       {
@@ -236,7 +236,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-004-10",
         title: "Definition of Done実施と最終確認（DONE）",
-        status: "refactor",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
     ],
