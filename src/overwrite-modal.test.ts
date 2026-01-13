@@ -135,4 +135,70 @@ describe("OverwriteModal", () => {
 			expect(closeSpy).toHaveBeenCalled();
 		});
 	});
+
+	describe("Renameボタン動作", () => {
+		it("RenameボタンクリックでonResultが'rename'で呼ばれる", () => {
+			const onResult = vi.fn();
+			const modal = new OverwriteModal(mockApp, "test.md", onResult);
+
+			let renameClickHandler: (() => void) | null = null;
+
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					const mockEl = {
+						addEventListener: vi.fn((event: string, handler: () => void) => {
+							if (options?.text === "Rename") {
+								renameClickHandler = handler;
+							}
+						}),
+					};
+					return mockEl;
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.close = vi.fn();
+
+			modal.onOpen();
+
+			// Renameボタンのクリックハンドラを実行
+			expect(renameClickHandler).toBeDefined();
+			renameClickHandler?.();
+
+			expect(onResult).toHaveBeenCalledWith("rename");
+		});
+
+		it("Renameボタンクリック後にモーダルが閉じられる", () => {
+			const onResult = vi.fn();
+			const modal = new OverwriteModal(mockApp, "test.md", onResult);
+
+			let renameClickHandler: (() => void) | null = null;
+
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					const mockEl = {
+						addEventListener: vi.fn((event: string, handler: () => void) => {
+							if (options?.text === "Rename") {
+								renameClickHandler = handler;
+							}
+						}),
+					};
+					return mockEl;
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+			const closeSpy = vi.fn();
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.close = closeSpy;
+
+			modal.onOpen();
+			renameClickHandler?.();
+
+			expect(closeSpy).toHaveBeenCalled();
+		});
+	});
 });

@@ -201,7 +201,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-5.4",
         title: "Renameボタン動作のテストと実装（RED→GREEN）",
-        status: "red",
+        status: "green",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
