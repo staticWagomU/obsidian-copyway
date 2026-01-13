@@ -14,6 +14,11 @@ export class CopyFileCommand {
 	) {}
 
 	async execute(): Promise<void> {
-		// 実装は後のサブタスクで追加
+		// アクティブファイルの取得
+		const activeFile = this.app.workspace.getActiveFile();
+		if (!activeFile) {
+			this.notice("No active file to copy");
+			return;
+		}
 	}
 }

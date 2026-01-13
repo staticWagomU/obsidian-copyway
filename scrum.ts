@@ -215,8 +215,8 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-6.2",
         title: "アクティブファイルなしエラーの実装（RED-GREEN-REFACTOR）",
-        status: "red",
-        test_file: "src/commands/CopyFileCommand.test.ts",
+        status: "done",
+        test_file: "src/commands/copy-file-command.test.ts",
       },
       {
         id: "ST-6.3",

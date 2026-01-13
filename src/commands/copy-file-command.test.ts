@@ -11,7 +11,11 @@ describe("CopyFileCommand - Phase 1: コマンド登録と基本構造", () => {
 	let mockNotice: (message: string) => any;
 
 	beforeEach(() => {
-		mockApp = {} as App;
+		mockApp = {
+			workspace: {
+				getActiveFile: vi.fn(() => null),
+			},
+		} as any;
 		mockCopyService = {} as ICopyService;
 		mockGetDestinations = vi.fn(() => []);
 		mockNotice = vi.fn();
@@ -51,6 +55,52 @@ describe("CopyFileCommand - Phase 1: コマンド登録と基本構造", () => {
 			);
 
 			await expect(command.execute()).resolves.toBeUndefined();
+		});
+	});
+
+	describe("ST-6.2: アクティブファイルなしエラー", () => {
+		it("アクティブファイルがない場合、エラー通知を表示する", async () => {
+			// アクティブファイルがnullの場合
+			mockApp.workspace = {
+				getActiveFile: vi.fn(() => null),
+			} as any;
+
+			const command = new CopyFileCommand(
+				mockApp,
+				mockCopyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			await command.execute();
+
+			// エラー通知が呼ばれることを確認
+			expect(mockNotice).toHaveBeenCalledWith("No active file to copy");
+		});
+
+		it("アクティブファイルがある場合、アクティブファイルなしエラーは表示されない", async () => {
+			// アクティブファイルが存在する場合
+			const mockFile: TFile = {
+				name: "test.md",
+				path: "test.md",
+			} as TFile;
+
+			mockApp.workspace = {
+				getActiveFile: vi.fn(() => mockFile),
+			} as any;
+
+			// コピー先が0件なので、別のエラーが出るが、アクティブファイルなしエラーは出ない
+			const command = new CopyFileCommand(
+				mockApp,
+				mockCopyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			await command.execute();
+
+			// "No active file to copy"は呼ばれない
+			expect(mockNotice).not.toHaveBeenCalledWith("No active file to copy");
 		});
 	});
 });
