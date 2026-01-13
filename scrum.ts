@@ -162,7 +162,7 @@ const dashboard: ScrumDashboard = {
       title: "コピーコマンド統合",
       description:
         "ユーザーとして、コマンドパレットからコピーを実行できることで、素早くファイルをコピーできる",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         // コマンド登録
         "コマンドパレットに「Copy file to destination」コマンドが表示される",
@@ -202,7 +202,7 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "コマンドパレットからファイルコピーを実行できる統合機能を、エンドツーエンドのTDDサイクルで完成させる",
-    status: "active",
+    status: "review",
     pbi_id: "PBI-006",
     subtasks: [
       // Phase 1: Command registration and basic structure
