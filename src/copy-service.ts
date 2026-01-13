@@ -37,6 +37,11 @@ export interface ICopyService {
 		sourceName: string,
 		destination: CopyDestination,
 	): Promise<CopyResult>;
+	copyWithRename(
+		sourceContent: string,
+		sourceName: string,
+		destination: CopyDestination,
+	): Promise<CopyResult>;
 }
 
 /**

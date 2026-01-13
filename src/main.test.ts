@@ -160,6 +160,8 @@ describe("CopywayPlugin", () => {
 	describe("ST-008: main.tsでSettingTabを登録", () => {
 		test("onload()でaddSettingTabが呼ばれる", async () => {
 			const addSettingTabSpy = vi.spyOn(plugin, "addSettingTab");
+			// addCommandもモックが必要だが、プラグインクラスのメソッドなので直接spyできない
+			plugin.addCommand = vi.fn();
 
 			await plugin.onload();
 

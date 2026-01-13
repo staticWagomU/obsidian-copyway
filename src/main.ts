@@ -1,6 +1,8 @@
-import { Plugin } from "obsidian";
+import { Notice, Plugin } from "obsidian";
 import type { CopywaySettings } from "./types";
 import { CopywaySettingTab } from "./settings-tab";
+import { CopyFileCommand } from "./commands/copy-file-command";
+import { CopyService } from "./copy-service";
 
 /**
  * デフォルト設定
@@ -23,6 +25,22 @@ export default class CopywayPlugin extends Plugin {
 
 		// 設定タブを追加
 		this.addSettingTab(new CopywaySettingTab(this.app, this));
+
+		// コピーコマンドを登録
+		this.addCommand({
+			id: "copy-file",
+			name: "Copy file to destination",
+			callback: async () => {
+				const copyService = new CopyService(this.app.vault);
+				const command = new CopyFileCommand(
+					this.app,
+					copyService,
+					() => this.settings.destinations,
+					(message: string) => new Notice(message),
+				);
+				await command.execute();
+			},
+		});
 	}
 
 	onunload() {
