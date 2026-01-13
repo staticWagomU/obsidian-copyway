@@ -193,7 +193,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-011",
         title: "上書きモード時の同名ファイル処理を実装",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {

@@ -93,3 +93,64 @@ describe("CopyService - 基本的なファイルコピー機能", () => {
 		expect(saved).toBe(content);
 	});
 });
+
+describe("CopyService - 上書きモード", () => {
+	let vault: Vault;
+	let service: CopyService;
+	let destination: CopyDestination;
+
+	beforeEach(() => {
+		vault = new Vault();
+		service = new CopyService(vault);
+		destination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: true,
+		};
+	});
+
+	it("上書きモードが有効な場合、同名ファイルが存在していても上書きできる", async () => {
+		// 既存ファイルを作成
+		await vault.adapter.write("dest/existing.md", "Old Content");
+
+		// 上書きコピー
+		const result = await service.copy(
+			"New Content",
+			"existing.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/existing.md");
+		}
+
+		const content = await vault.adapter.read("dest/existing.md");
+		expect(content).toBe("New Content");
+	});
+
+	it("上書きモードが無効で同名ファイルが存在する場合、file_existsエラーを返す", async () => {
+		// 上書き無効に設定
+		destination.overwrite = false;
+
+		// 既存ファイルを作成
+		await vault.adapter.write("dest/existing.md", "Old Content");
+
+		// コピー試行
+		const result = await service.copy(
+			"New Content",
+			"existing.md",
+			destination,
+		);
+
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error).toBe("file_exists");
+			expect(result.message).toContain("existing.md");
+		}
+
+		// 元のファイルが変更されていないことを確認
+		const content = await vault.adapter.read("dest/existing.md");
+		expect(content).toBe("Old Content");
+	});
+});
