@@ -148,13 +148,14 @@ const dashboard: ScrumDashboard = {
       title: "上書き確認ダイアログ",
       description:
         "ユーザーとして、同名ファイル存在時に選択肢が表示されることで、誤ってファイルを失わない",
-      status: "draft",
+      status: "ready",
       acceptance_criteria: [
         "Overwriteボタンで上書きコピーが実行される",
         "Renameボタンでリネームコピーが実行される",
         "Cancelボタンでコピーがキャンセルされる",
         "ファイル名が表示される",
       ],
+      story_points: 3,
     },
     {
       id: "PBI-006",
