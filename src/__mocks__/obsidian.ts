@@ -2,6 +2,65 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export type App = any;
 
+/**
+ * ファイルの統計情報
+ */
+export interface FileStats {
+	type: "file" | "folder";
+	ctime: number;
+	mtime: number;
+	size: number;
+}
+
+/**
+ * Vault Adapterのモック実装
+ * ファイルシステムをメモリ上で管理する
+ */
+export class DataAdapter {
+	private files: Map<string, string> = new Map();
+	private stats: Map<string, FileStats> = new Map();
+
+	async exists(path: string): Promise<boolean> {
+		return this.files.has(path);
+	}
+
+	async write(path: string, data: string): Promise<void> {
+		const now = Date.now();
+		this.files.set(path, data);
+
+		const existingStats = this.stats.get(path);
+		this.stats.set(path, {
+			type: "file",
+			ctime: existingStats?.ctime ?? now,
+			mtime: now,
+			size: data.length,
+		});
+	}
+
+	async read(path: string): Promise<string> {
+		const content = this.files.get(path);
+		if (content === undefined) {
+			throw new Error(`ENOENT: no such file or directory, open '${path}'`);
+		}
+		return content;
+	}
+
+	async stat(path: string): Promise<FileStats | null> {
+		return this.stats.get(path) ?? null;
+	}
+}
+
+/**
+ * Vaultのモック実装
+ */
+export class Vault {
+	adapter: DataAdapter;
+
+	constructor() {
+		this.adapter = new DataAdapter();
+	}
+}
+
 export class Plugin {
 	app: App;
 	manifest: unknown;

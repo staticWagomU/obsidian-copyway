@@ -217,7 +217,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-015",
         title: "Obsidian Vault Adapterモックを拡張（read/write/exists/stat）",
-        status: "red",
+        status: "done",
         test_file: "src/__mocks__/obsidian.ts",
       },
     ],
