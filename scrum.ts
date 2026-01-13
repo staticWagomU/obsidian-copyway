@@ -202,7 +202,7 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "コマンドパレットからファイルコピーを実行できる統合機能を、エンドツーエンドのTDDサイクルで完成させる",
-    status: "review",
+    status: "done",
     pbi_id: "PBI-006",
     subtasks: [
       // Phase 1: Command registration and basic structure
