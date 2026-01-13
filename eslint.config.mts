@@ -23,9 +23,12 @@ export default tseslint.config(
 	...obsidianmd.configs.recommended,
 	{
 		// Oxlint に任せるルールを無効化（obsidianmd.configs.recommended の後に適用）
+		// Obsidian は Electron 環境で動作するため Node.js モジュールは使用可能
 		rules: {
 			"no-undef": "off",
 			"no-console": "off",
+			"import/no-nodejs-modules": "off",
+			"@typescript-eslint/no-unsafe-assignment": "off",
 		},
 	},
 	globalIgnores([
