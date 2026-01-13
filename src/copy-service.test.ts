@@ -3,7 +3,6 @@ import type {
 	CopySuccess,
 	CopyFailure,
 	CopyResult,
-	ICopyService,
 } from "./copy-service";
 import { CopyService } from "./copy-service";
 import { Vault } from "obsidian";

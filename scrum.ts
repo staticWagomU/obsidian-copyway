@@ -119,7 +119,7 @@ const dashboard: ScrumDashboard = {
       title: "CopyService",
       description:
         "ユーザーとして、ファイルコピー処理が確実に実行されることで、安心してファイルを管理できる",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         "指定したパスにファイルがコピーされる",
         "同名ファイル存在時に上書きコピーができる",
@@ -175,7 +175,7 @@ const dashboard: ScrumDashboard = {
 
   sprint: {
     goal: "ファイルコピー処理を確実に実行できるCopyServiceを実装し、上書きとリネームの両方に対応する",
-    status: "active",
+    status: "done",
     pbi_id: "PBI-003",
     subtasks: [
       {

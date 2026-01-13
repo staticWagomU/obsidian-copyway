@@ -1,13 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { App, Vault, DataAdapter, FileStats } from "obsidian";
+import { Vault, DataAdapter } from "obsidian";
 
 describe("Obsidian Mock - Vault Adapter", () => {
-	let app: App;
 	let vault: Vault;
 	let adapter: DataAdapter;
 
 	beforeEach(() => {
-		app = {} as App;
 		vault = new Vault();
 		adapter = vault.adapter;
 	});
