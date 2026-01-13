@@ -188,13 +188,13 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-004-2",
         title: "DestinationModalの基本的なレンダリング機能の実装（GREEN）",
-        status: "green",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
       {
         id: "ST-004-3",
         title: "キーボード操作（↑↓選択、Enter決定、Esc閉じる）のテスト追加（RED）",
-        status: "red",
+        status: "green",
         test_file: "src/destination-modal.test.ts",
       },
       {

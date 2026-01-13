@@ -96,11 +96,17 @@ export class Plugin {
 
 export class Modal {
 	app: App;
+	contentEl: HTMLElement;
 	constructor(app: App) {
 		this.app = app;
+		this.contentEl = document.createElement("div");
 	}
-	open(): void {}
-	close(): void {}
+	open(): void {
+		this.onOpen();
+	}
+	close(): void {
+		this.onClose();
+	}
 	onOpen(): void {}
 	onClose(): void {}
 }
