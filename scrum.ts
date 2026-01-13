@@ -162,16 +162,41 @@ const dashboard: ScrumDashboard = {
       title: "コピーコマンド統合",
       description:
         "ユーザーとして、コマンドパレットからコピーを実行できることで、素早くファイルをコピーできる",
-      status: "draft",
+      status: "ready",
       acceptance_criteria: [
-        "コマンドパレットに「Copy file to destination」が表示される",
-        "アクティブファイルがない場合、エラー通知が表示される",
-        "コピー先が0件の場合、設定を促すエラー通知が表示される",
-        "コピー先が1件の場合、直接コピーが実行される",
-        "コピー先が2件以上の場合、選択モーダルが表示される",
-        "コピー成功時に成功通知が表示される（3パターン）",
-        "コピー失敗時にエラー通知が表示される（5パターン）",
+        // コマンド登録
+        "コマンドパレットに「Copy file to destination」コマンドが表示される",
+
+        // 前提条件エラー
+        "アクティブファイルがない場合、「No active file to copy」エラー通知が表示される",
+        "コピー先が0件の場合、「No copy destinations configured. Please add destinations in settings.」エラー通知が表示される",
+
+        // コピー先選択フロー
+        "コピー先が1件の場合、DestinationModalを表示せず直接コピー処理へ進む",
+        "コピー先が2件以上の場合、DestinationModalが表示される",
+        "DestinationModalでコピー先を選択すると、選択したコピー先へのコピー処理が実行される",
+        "DestinationModalでEscapeキーを押下すると、コピー処理がキャンセルされる",
+
+        // 上書き確認フロー
+        "overwrite=trueのコピー先で同名ファイルが存在する場合、OverwriteModalを表示せず直接上書きコピーが実行される",
+        "overwrite=falseのコピー先で同名ファイルが存在する場合、OverwriteModalが表示される",
+        "OverwriteModalでOverwriteボタンを押下すると、上書きコピーが実行される",
+        "OverwriteModalでRenameボタンを押下すると、リネームコピーが実行される",
+        "OverwriteModalでCancelボタンを押下すると、コピー処理がキャンセルされる",
+
+        // 成功通知（3パターン）
+        "新規ファイルコピー成功時に「Copied \"{filename}\" to \"{destination}\"」通知が表示される",
+        "上書きコピー成功時に「Overwrote \"{filename}\" in \"{destination}\"」通知が表示される",
+        "リネームコピー成功時に「Copied as \"{new_filename}\" to \"{destination}\"」通知が表示される",
+
+        // エラー通知（5パターン）
+        "アクティブファイルがない場合に「No active file to copy」エラー通知が表示される",
+        "コピー先が0件の場合に「No copy destinations configured. Please add destinations in settings.」エラー通知が表示される",
+        "コピー先ディレクトリが存在しない場合に「Destination folder does not exist: {path}」エラー通知が表示される",
+        "I/Oエラー発生時に「Failed to copy file: {error message}」エラー通知が表示される",
+        "権限エラー発生時に「Permission denied: {path}」エラー通知が表示される",
       ],
+      story_points: 5,
     },
   ],
 
