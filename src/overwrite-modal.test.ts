@@ -201,4 +201,70 @@ describe("OverwriteModal", () => {
 			expect(closeSpy).toHaveBeenCalled();
 		});
 	});
+
+	describe("Cancelボタン動作", () => {
+		it("CancelボタンクリックでonResultが'cancel'で呼ばれる", () => {
+			const onResult = vi.fn();
+			const modal = new OverwriteModal(mockApp, "test.md", onResult);
+
+			let cancelClickHandler: (() => void) | null = null;
+
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					const mockEl = {
+						addEventListener: vi.fn((event: string, handler: () => void) => {
+							if (options?.text === "Cancel") {
+								cancelClickHandler = handler;
+							}
+						}),
+					};
+					return mockEl;
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.close = vi.fn();
+
+			modal.onOpen();
+
+			// Cancelボタンのクリックハンドラを実行
+			expect(cancelClickHandler).toBeDefined();
+			cancelClickHandler?.();
+
+			expect(onResult).toHaveBeenCalledWith("cancel");
+		});
+
+		it("Cancelボタンクリック後にモーダルが閉じられる", () => {
+			const onResult = vi.fn();
+			const modal = new OverwriteModal(mockApp, "test.md", onResult);
+
+			let cancelClickHandler: (() => void) | null = null;
+
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					const mockEl = {
+						addEventListener: vi.fn((event: string, handler: () => void) => {
+							if (options?.text === "Cancel") {
+								cancelClickHandler = handler;
+							}
+						}),
+					};
+					return mockEl;
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+			const closeSpy = vi.fn();
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.close = closeSpy;
+
+			modal.onOpen();
+			cancelClickHandler?.();
+
+			expect(closeSpy).toHaveBeenCalled();
+		});
+	});
 });
