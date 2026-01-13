@@ -315,3 +315,62 @@ describe("CopyService - ディレクトリ存在チェック", () => {
 		}
 	});
 });
+
+describe("CopyService - I/Oエラーハンドリング", () => {
+	let vault: Vault;
+	let service: CopyService;
+	let destination: CopyDestination;
+
+	beforeEach(async () => {
+		vault = new Vault();
+		service = new CopyService(vault);
+		destination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+		};
+		// ディレクトリを事前に作成
+		await vault.adapter.write("dest/.keep", "");
+	});
+
+	it("write時にエラーが発生した場合、io_errorを返す", async () => {
+		// write()をモックしてエラーをスロー
+		const originalWrite = vault.adapter.write.bind(vault.adapter);
+		vault.adapter.write = async () => {
+			throw new Error("Disk full");
+		};
+
+		const result = await service.copy("Content", "file.md", destination);
+
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error).toBe("io_error");
+			expect(result.message).toContain("I/O error");
+		}
+
+		// 元に戻す
+		vault.adapter.write = originalWrite;
+	});
+
+	it("copyWithRename時にwrite エラーが発生した場合、io_errorを返す", async () => {
+		// write()をモックしてエラーをスロー
+		const originalWrite = vault.adapter.write.bind(vault.adapter);
+		vault.adapter.write = async () => {
+			throw new Error("Permission denied");
+		};
+
+		const result = await service.copyWithRename(
+			"Content",
+			"file.md",
+			destination,
+		);
+
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error).toBe("io_error");
+		}
+
+		// 元に戻す
+		vault.adapter.write = originalWrite;
+	});
+});

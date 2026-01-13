@@ -211,7 +211,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-014",
         title: "I/Oエラーハンドリングを実装",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {

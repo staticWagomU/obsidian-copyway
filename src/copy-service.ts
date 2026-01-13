@@ -50,37 +50,45 @@ export class CopyService implements ICopyService {
 		sourceName: string,
 		destination: CopyDestination,
 	): Promise<CopyResult> {
-		// ディレクトリ存在チェック
-		const dirExists = await this.directoryExists(destination.path);
-		if (!dirExists) {
+		try {
+			// ディレクトリ存在チェック
+			const dirExists = await this.directoryExists(destination.path);
+			if (!dirExists) {
+				return {
+					success: false,
+					error: "dir_not_found",
+					message: `Directory not found: ${destination.path}`,
+				};
+			}
+
+			const targetPath = `${destination.path}/${sourceName}`;
+
+			// ファイル存在チェック
+			const exists = await this.vault.adapter.exists(targetPath);
+
+			// 上書きモードが無効で、ファイルが既に存在する場合
+			if (exists && !destination.overwrite) {
+				return {
+					success: false,
+					error: "file_exists",
+					message: `File already exists: ${sourceName}`,
+				};
+			}
+
+			// ファイルを書き込み（上書きモードが有効な場合、または新規ファイルの場合）
+			await this.vault.adapter.write(targetPath, sourceContent);
+
+			return {
+				success: true,
+				path: targetPath,
+			};
+		} catch (error) {
 			return {
 				success: false,
-				error: "dir_not_found",
-				message: `Directory not found: ${destination.path}`,
+				error: "io_error",
+				message: `I/O error: ${error instanceof Error ? error.message : String(error)}`,
 			};
 		}
-
-		const targetPath = `${destination.path}/${sourceName}`;
-
-		// ファイル存在チェック
-		const exists = await this.vault.adapter.exists(targetPath);
-
-		// 上書きモードが無効で、ファイルが既に存在する場合
-		if (exists && !destination.overwrite) {
-			return {
-				success: false,
-				error: "file_exists",
-				message: `File already exists: ${sourceName}`,
-			};
-		}
-
-		// ファイルを書き込み（上書きモードが有効な場合、または新規ファイルの場合）
-		await this.vault.adapter.write(targetPath, sourceContent);
-
-		return {
-			success: true,
-			path: targetPath,
-		};
 	}
 
 	/**
@@ -92,34 +100,42 @@ export class CopyService implements ICopyService {
 		sourceName: string,
 		destination: CopyDestination,
 	): Promise<CopyResult> {
-		// ディレクトリ存在チェック
-		const dirExists = await this.directoryExists(destination.path);
-		if (!dirExists) {
+		try {
+			// ディレクトリ存在チェック
+			const dirExists = await this.directoryExists(destination.path);
+			if (!dirExists) {
+				return {
+					success: false,
+					error: "dir_not_found",
+					message: `Directory not found: ${destination.path}`,
+				};
+			}
+
+			const { baseName, extension } = this.splitFileName(sourceName);
+			let counter = 0;
+			let targetPath = `${destination.path}/${sourceName}`;
+
+			// 利用可能なファイル名を見つけるまでループ
+			while (await this.vault.adapter.exists(targetPath)) {
+				counter++;
+				const newFileName = `${baseName}_${counter}${extension}`;
+				targetPath = `${destination.path}/${newFileName}`;
+			}
+
+			// ファイルを書き込み
+			await this.vault.adapter.write(targetPath, sourceContent);
+
+			return {
+				success: true,
+				path: targetPath,
+			};
+		} catch (error) {
 			return {
 				success: false,
-				error: "dir_not_found",
-				message: `Directory not found: ${destination.path}`,
+				error: "io_error",
+				message: `I/O error: ${error instanceof Error ? error.message : String(error)}`,
 			};
 		}
-
-		const { baseName, extension } = this.splitFileName(sourceName);
-		let counter = 0;
-		let targetPath = `${destination.path}/${sourceName}`;
-
-		// 利用可能なファイル名を見つけるまでループ
-		while (await this.vault.adapter.exists(targetPath)) {
-			counter++;
-			const newFileName = `${baseName}_${counter}${extension}`;
-			targetPath = `${destination.path}/${newFileName}`;
-		}
-
-		// ファイルを書き込み
-		await this.vault.adapter.write(targetPath, sourceContent);
-
-		return {
-			success: true,
-			path: targetPath,
-		};
 	}
 
 	/**
