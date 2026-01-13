@@ -21,14 +21,12 @@ describe("CopyFileCommand", () => {
 			},
 			vault: {
 				read: vi.fn(),
-				adapter: {
-					exists: vi.fn(),
-				},
 			},
 		} as any;
 		mockCopyService = {
 			copy: vi.fn(),
 			copyWithRename: vi.fn(),
+			fileExists: vi.fn().mockResolvedValue(false),
 		} as any;
 		mockGetDestinations = vi.fn(() => []);
 		mockNotice = vi.fn();
@@ -188,7 +186,7 @@ describe("CopyFileCommand", () => {
 				await command.execute();
 
 				// ファイル存在チェックは呼ばれない
-				expect(mockApp.vault.adapter.exists).not.toHaveBeenCalled();
+				expect(mockCopyService.fileExists).not.toHaveBeenCalled();
 				// copyが呼ばれる
 				expect(mockCopyService.copy).toHaveBeenCalled();
 			});
@@ -199,7 +197,7 @@ describe("CopyFileCommand", () => {
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("file content");
-				mockApp.vault.adapter.exists = vi.fn().mockResolvedValue(false);
+				mockCopyService.fileExists = vi.fn().mockResolvedValue(false);
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -220,8 +218,9 @@ describe("CopyFileCommand", () => {
 				await command.execute();
 
 				// ファイル存在チェックが呼ばれる
-				expect(mockApp.vault.adapter.exists).toHaveBeenCalledWith(
-					"/dest/test.md",
+				expect(mockCopyService.fileExists).toHaveBeenCalledWith(
+					"/dest",
+					"test.md",
 				);
 				// copyが呼ばれる
 				expect(mockCopyService.copy).toHaveBeenCalled();
@@ -231,7 +230,7 @@ describe("CopyFileCommand", () => {
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("file content");
-				mockApp.vault.adapter.exists = vi.fn().mockResolvedValue(true);
+				mockCopyService.fileExists = vi.fn().mockResolvedValue(true);
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -251,8 +250,9 @@ describe("CopyFileCommand", () => {
 				await new Promise((resolve) => setTimeout(resolve, 10));
 
 				// ファイル存在チェックが呼ばれる
-				expect(mockApp.vault.adapter.exists).toHaveBeenCalledWith(
-					"/dest/test.md",
+				expect(mockCopyService.fileExists).toHaveBeenCalledWith(
+					"/dest",
+					"test.md",
 				);
 			});
 		});
@@ -264,7 +264,7 @@ describe("CopyFileCommand", () => {
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("file content");
-				mockApp.vault.adapter.exists = vi.fn().mockResolvedValue(false);
+				mockCopyService.fileExists = vi.fn().mockResolvedValue(false);
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -327,7 +327,7 @@ describe("CopyFileCommand", () => {
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("file content");
-				mockApp.vault.adapter.exists = vi.fn().mockResolvedValue(false);
+				mockCopyService.fileExists = vi.fn().mockResolvedValue(false);
 
 				const dest: CopyDestination = {
 					path: "/dest",

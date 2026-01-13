@@ -201,30 +201,29 @@ describe("DestinationModal", () => {
 	});
 
 	describe("クリック操作", () => {
-		it("項目をクリックすると選択される", () => {
+		it("項目をクリックすると即座に選択が確定する", () => {
 			const destinations: CopyDestination[] = [
 				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
 				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
 				{ path: "/path/to/dest3", description: "Archive", overwrite: false },
 			];
-			const modal = new DestinationModal({} as any, destinations, () => {});
+			const onSelect = vi.fn();
+			const modal = new DestinationModal({} as any, destinations, onSelect);
+			const closeSpy = vi.spyOn(modal, "close");
 
 			modal.open();
 
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
-			// 最初は0番目が選択
-			expect(items[0]!.classList.contains("is-selected")).toBe(true);
-
 			// 2番目をクリック
 			items[2]!.dispatchEvent(new MouseEvent("click"));
 
-			// 2番目が選択される
-			expect(items[0]!.classList.contains("is-selected")).toBe(false);
-			expect(items[2]!.classList.contains("is-selected")).toBe(true);
+			// クリックで即座にコールバックが実行され、モーダルが閉じる
+			expect(onSelect).toHaveBeenCalledWith(destinations[2]);
+			expect(closeSpy).toHaveBeenCalled();
 		});
 
-		it("項目をクリックしてEnterでコールバックが実行され、モーダルが閉じる", () => {
+		it("クリックでコールバックが実行され、モーダルが閉じる", () => {
 			const destinations: CopyDestination[] = [
 				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
 				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
@@ -240,18 +239,12 @@ describe("DestinationModal", () => {
 			// 1番目をクリック
 			items[1]!.dispatchEvent(new MouseEvent("click"));
 
-			// クリック後は選択されるがまだコールバックは呼ばれない
-			expect(items[1]!.classList.contains("is-selected")).toBe(true);
-			expect(onSelect).not.toHaveBeenCalled();
-
-			// Enterキーで確定
-			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-
+			// クリックで即座にコールバックが実行される
 			expect(onSelect).toHaveBeenCalledWith(destinations[1]);
 			expect(closeSpy).toHaveBeenCalled();
 		});
 
-		it("クリックとキーボード操作を組み合わせて使える", () => {
+		it("キーボードで選択してEnterで確定できる", () => {
 			const destinations: CopyDestination[] = [
 				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
 				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
@@ -264,13 +257,12 @@ describe("DestinationModal", () => {
 
 			const items = modal.contentEl.querySelectorAll(".destination-item");
 
-			// 1番目をクリック
-			items[1]!.dispatchEvent(new MouseEvent("click"));
+			// ↓キーで1番目に移動
+			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
 			expect(items[1]!.classList.contains("is-selected")).toBe(true);
 
 			// ↓キーで2番目に移動
 			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-			expect(items[1]!.classList.contains("is-selected")).toBe(false);
 			expect(items[2]!.classList.contains("is-selected")).toBe(true);
 
 			// Enterキーで選択

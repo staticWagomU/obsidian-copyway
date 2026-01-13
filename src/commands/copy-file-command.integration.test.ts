@@ -7,7 +7,46 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CopyFileCommand } from "./copy-file-command";
 import type { App, TFile } from "obsidian";
 import type { CopyDestination } from "../types";
-import { CopyService } from "../copy-service";
+import { CopyService, joinPath } from "../copy-service";
+import type { IFileSystem } from "../copy-service";
+
+/**
+ * テスト用のモックファイルシステム
+ */
+class MockFileSystem implements IFileSystem {
+	private existingDirs: Set<string> = new Set();
+	private existingFiles: Map<string, string> = new Map();
+	public writtenFiles: Map<string, string> = new Map();
+	public shouldThrowError: Error | null = null;
+
+	addDirectory(path: string): void {
+		this.existingDirs.add(path);
+	}
+
+	addFile(path: string, content: string): void {
+		this.existingFiles.set(path, content);
+	}
+
+	async directoryExists(path: string): Promise<boolean> {
+		return this.existingDirs.has(path);
+	}
+
+	async fileExists(path: string): Promise<boolean> {
+		return this.existingFiles.has(path) || this.writtenFiles.has(path);
+	}
+
+	async writeFile(path: string, content: string): Promise<void> {
+		if (this.shouldThrowError) {
+			throw this.shouldThrowError;
+		}
+		this.writtenFiles.set(path, content);
+		this.existingFiles.set(path, content);
+	}
+
+	getWrittenContent(path: string): string | undefined {
+		return this.writtenFiles.get(path) ?? this.existingFiles.get(path);
+	}
+}
 
 describe("CopyFileCommand - Integration Tests", () => {
 	let mockApp: App;
@@ -15,25 +54,22 @@ describe("CopyFileCommand - Integration Tests", () => {
 	let mockGetDestinations: () => CopyDestination[];
 	let mockNotice: (message: string) => any;
 	let notificationMessages: string[];
+	let mockFs: MockFileSystem;
 
 	beforeEach(() => {
 		notificationMessages = [];
+		mockFs = new MockFileSystem();
 		mockApp = {
 			workspace: {
 				getActiveFile: vi.fn(),
 			},
 			vault: {
 				read: vi.fn(),
-				adapter: {
-					exists: vi.fn(),
-					write: vi.fn(),
-					stat: vi.fn(),
-				},
 			},
 		} as any;
 
-		// 実際のCopyServiceを使用
-		copyService = new CopyService(mockApp.vault as any);
+		// 実際のCopyServiceを使用（モックファイルシステムを注入）
+		copyService = new CopyService(mockFs);
 
 		mockGetDestinations = vi.fn(() => []);
 		mockNotice = vi.fn((message: string) => {
@@ -44,12 +80,10 @@ describe("CopyFileCommand - Integration Tests", () => {
 	describe("ST-6.19: エンドツーエンドシナリオテスト（コマンド→モーダル→コピー完了）", () => {
 		it("シナリオ1: アクティブファイル→コピー先1件→新規ファイルコピー→成功通知", async () => {
 			// Setup
+			mockFs.addDirectory("/archive");
 			const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 			mockApp.vault.read = vi.fn().mockResolvedValue("# Test content");
-			mockApp.vault.adapter.exists = vi.fn().mockResolvedValue(false);
-			mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-			mockApp.vault.adapter.write = vi.fn().mockResolvedValue(undefined);
 
 			const dest: CopyDestination = {
 				path: "/archive",
@@ -70,13 +104,7 @@ describe("CopyFileCommand - Integration Tests", () => {
 
 			// Assert
 			expect(mockApp.vault.read).toHaveBeenCalledWith(mockFile);
-			expect(mockApp.vault.adapter.exists).toHaveBeenCalledWith(
-				"/archive/test.md",
-			);
-			expect(mockApp.vault.adapter.write).toHaveBeenCalledWith(
-				"/archive/test.md",
-				"# Test content",
-			);
+			expect(mockFs.getWrittenContent(joinPath("/archive", "test.md"))).toBe("# Test content");
 			expect(notificationMessages).toContain(
 				'Copied "test.md" to "Archive Folder"',
 			);
@@ -84,11 +112,11 @@ describe("CopyFileCommand - Integration Tests", () => {
 
 		it("シナリオ2: アクティブファイル→コピー先1件→overwrite=true→上書きコピー→成功通知", async () => {
 			// Setup
+			mockFs.addDirectory("/archive");
+			mockFs.addFile(joinPath("/archive", "test.md"), "Old content");
 			const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 			mockApp.vault.read = vi.fn().mockResolvedValue("# Test content");
-			mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-			mockApp.vault.adapter.write = vi.fn().mockResolvedValue(undefined);
 
 			const dest: CopyDestination = {
 				path: "/archive",
@@ -108,21 +136,17 @@ describe("CopyFileCommand - Integration Tests", () => {
 			await command.execute();
 
 			// Assert
-			expect(mockApp.vault.adapter.write).toHaveBeenCalledWith(
-				"/archive/test.md",
-				"# Test content",
-			);
+			expect(mockFs.getWrittenContent(joinPath("/archive", "test.md"))).toBe("# Test content");
 			expect(notificationMessages).toContain(
 				'Copied "test.md" to "Archive Folder"',
 			);
 		});
 
 		it("シナリオ3: ディレクトリ不在エラー→エラー通知", async () => {
-			// Setup
+			// Setup - mockFsにディレクトリを追加しない（存在しない状態）
 			const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 			mockApp.vault.read = vi.fn().mockResolvedValue("# Test content");
-			mockApp.vault.adapter.stat = vi.fn().mockResolvedValue(null); // ディレクトリ不在
 
 			const dest: CopyDestination = {
 				path: "/nonexistent",
@@ -151,12 +175,10 @@ describe("CopyFileCommand - Integration Tests", () => {
 	describe("ST-6.20: 全通知パターン（成功3+エラー5）の統合テスト", () => {
 		describe("成功通知パターン", () => {
 			it("通知1: 新規ファイルコピー成功", async () => {
+				mockFs.addDirectory("/dest");
 				const mockFile: TFile = { name: "new.md", path: "new.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("content");
-				mockApp.vault.adapter.exists = vi.fn().mockResolvedValue(false);
-				mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-				mockApp.vault.adapter.write = vi.fn().mockResolvedValue(undefined);
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -177,11 +199,11 @@ describe("CopyFileCommand - Integration Tests", () => {
 			});
 
 			it("通知2: 上書きコピー成功（overwrite=trueの場合は新規と同じメッセージ）", async () => {
+				mockFs.addDirectory("/dest");
+				mockFs.addFile(joinPath("/dest", "existing.md"), "old content");
 				const mockFile: TFile = { name: "existing.md", path: "existing.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("content");
-				mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-				mockApp.vault.adapter.write = vi.fn().mockResolvedValue(undefined);
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -203,15 +225,8 @@ describe("CopyFileCommand - Integration Tests", () => {
 
 			it("通知3: リネームコピー成功（copyWithRename経由）", async () => {
 				// copyWithRenameは実際のCopyServiceを使用してテスト
-				const mockFile: TFile = { name: "file.md", path: "file.md" } as TFile;
-				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
-				mockApp.vault.read = vi.fn().mockResolvedValue("content");
-				mockApp.vault.adapter.exists = vi
-					.fn()
-					.mockResolvedValueOnce(true) // file.md exists
-					.mockResolvedValueOnce(false); // file_1.md does not exist
-				mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-				mockApp.vault.adapter.write = vi.fn().mockResolvedValue(undefined);
+				mockFs.addDirectory("/dest");
+				mockFs.addFile(joinPath("/dest", "file.md"), "original");
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -224,7 +239,7 @@ describe("CopyFileCommand - Integration Tests", () => {
 
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.path).toBe("/dest/file_1.md");
+					expect(result.path).toBe(joinPath("/dest", "file_1.md"));
 				}
 			});
 		});
@@ -263,10 +278,10 @@ describe("CopyFileCommand - Integration Tests", () => {
 			});
 
 			it("エラー3: コピー先ディレクトリ存在エラー", async () => {
+				// mockFsにディレクトリを追加しない（存在しない状態）
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("content");
-				mockApp.vault.adapter.stat = vi.fn().mockResolvedValue(null);
 
 				const dest: CopyDestination = {
 					path: "/nonexistent",
@@ -289,13 +304,11 @@ describe("CopyFileCommand - Integration Tests", () => {
 			});
 
 			it("エラー4: I/Oエラー", async () => {
+				mockFs.addDirectory("/dest");
+				mockFs.shouldThrowError = new Error("Disk full");
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("content");
-				mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-				mockApp.vault.adapter.write = vi
-					.fn()
-					.mockRejectedValue(new Error("Disk full"));
 
 				const dest: CopyDestination = {
 					path: "/dest",
@@ -316,13 +329,11 @@ describe("CopyFileCommand - Integration Tests", () => {
 			});
 
 			it("エラー5: 権限エラー", async () => {
+				mockFs.addDirectory("/dest");
+				mockFs.shouldThrowError = new Error("EACCES: permission denied");
 				const mockFile: TFile = { name: "test.md", path: "test.md" } as TFile;
 				mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
 				mockApp.vault.read = vi.fn().mockResolvedValue("content");
-				mockApp.vault.adapter.stat = vi.fn().mockResolvedValue({ type: "folder" });
-				mockApp.vault.adapter.write = vi
-					.fn()
-					.mockRejectedValue(new Error("EACCES: permission denied"));
 
 				const dest: CopyDestination = {
 					path: "/dest",

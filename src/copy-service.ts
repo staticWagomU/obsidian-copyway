@@ -1,5 +1,111 @@
 import type { CopyDestination } from "./types";
-import type { Vault } from "obsidian";
+
+/**
+ * Electron/Node.js 環境で require を使用するためのヘルパー
+ * Vite のビルド時に外部化されないように動的に読み込む
+ */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodeOs = typeof require !== "undefined" ? require("os") : null;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodeFs = typeof require !== "undefined" ? require("fs") : null;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodePath = typeof require !== "undefined" ? require("path") : null;
+
+/**
+ * ファイルシステム操作のインターフェース
+ * テスト時にモック可能にするための抽象化
+ */
+export interface IFileSystem {
+	directoryExists(path: string): Promise<boolean>;
+	fileExists(path: string): Promise<boolean>;
+	writeFile(path: string, content: string): Promise<void>;
+}
+
+/**
+ * 本番環境用のファイルシステム実装
+ * Node.js fs モジュールを使用して外部パスにアクセス
+ */
+export class NodeFileSystem implements IFileSystem {
+	async directoryExists(path: string): Promise<boolean> {
+		if (!nodeFs) {
+			return false;
+		}
+		return new Promise((resolve) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+			nodeFs.stat(path, (err: Error | null, stats: { isDirectory: () => boolean } | null) => {
+				if (err || !stats) {
+					resolve(false);
+				} else {
+					resolve(stats.isDirectory());
+				}
+			});
+		});
+	}
+
+	async fileExists(path: string): Promise<boolean> {
+		if (!nodeFs) {
+			return false;
+		}
+		return new Promise((resolve) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+			nodeFs.stat(path, (err: Error | null, stats: { isFile: () => boolean } | null) => {
+				if (err || !stats) {
+					resolve(false);
+				} else {
+					resolve(stats.isFile());
+				}
+			});
+		});
+	}
+
+	async writeFile(path: string, content: string): Promise<void> {
+		if (!nodeFs) {
+			throw new Error("Node.js fs module not available");
+		}
+		return new Promise((resolve, reject) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+			nodeFs.writeFile(path, content, "utf8", (err: Error | null) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+}
+
+/**
+ * チルダ (~) をホームディレクトリに展開する
+ * シェルの Tilde Expansion と同等の機能を提供
+ */
+export function expandTilde(path: string): string {
+	if (!nodeOs) {
+		return path;
+	}
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+	const homeDir = nodeOs.homedir() as string;
+	if (path === "~") {
+		return homeDir;
+	}
+	if (path.startsWith("~/")) {
+		return homeDir + path.slice(1);
+	}
+	return path;
+}
+
+/**
+ * パスを安全に結合する
+ * Node.js の path.join を使用
+ */
+export function joinPath(base: string, ...paths: string[]): string {
+	if (!nodePath) {
+		// フォールバック: 単純な文字列結合
+		return [base, ...paths].join("/");
+	}
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+	return nodePath.join(base, ...paths) as string;
+}
 
 /**
  * コピー成功時の結果型
@@ -42,13 +148,18 @@ export interface ICopyService {
 		sourceName: string,
 		destination: CopyDestination,
 	): Promise<CopyResult>;
+	fileExists(destPath: string, fileName: string): Promise<boolean>;
 }
 
 /**
  * ファイルコピーサービス
  */
 export class CopyService implements ICopyService {
-	constructor(private vault: Vault) {}
+	private fileSystem: IFileSystem;
+
+	constructor(fileSystem?: IFileSystem) {
+		this.fileSystem = fileSystem ?? new NodeFileSystem();
+	}
 
 	async copy(
 		sourceContent: string,
@@ -56,20 +167,23 @@ export class CopyService implements ICopyService {
 		destination: CopyDestination,
 	): Promise<CopyResult> {
 		try {
+			// チルダ展開
+			const destPath = expandTilde(destination.path);
+
 			// ディレクトリ存在チェック
-			const dirExists = await this.directoryExists(destination.path);
+			const dirExists = await this.directoryExists(destPath);
 			if (!dirExists) {
 				return {
 					success: false,
 					error: "dir_not_found",
-					message: `Directory not found: ${destination.path}`,
+					message: `Directory not found: ${destPath}`,
 				};
 			}
 
-			const targetPath = `${destination.path}/${sourceName}`;
+			const targetPath = joinPath(destPath, sourceName);
 
-			// ファイル存在チェック
-			const exists = await this.vault.adapter.exists(targetPath);
+			// ファイル存在チェック（Node.js fs を使用）
+			const exists = await this.fileSystem.fileExists(targetPath);
 
 			// 上書きモードが無効で、ファイルが既に存在する場合
 			if (exists && !destination.overwrite) {
@@ -80,8 +194,8 @@ export class CopyService implements ICopyService {
 				};
 			}
 
-			// ファイルを書き込み（上書きモードが有効な場合、または新規ファイルの場合）
-			await this.vault.adapter.write(targetPath, sourceContent);
+			// ファイルを書き込み（Node.js fs を使用）
+			await this.fileSystem.writeFile(targetPath, sourceContent);
 
 			return {
 				success: true,
@@ -106,29 +220,32 @@ export class CopyService implements ICopyService {
 		destination: CopyDestination,
 	): Promise<CopyResult> {
 		try {
+			// チルダ展開
+			const destPath = expandTilde(destination.path);
+
 			// ディレクトリ存在チェック
-			const dirExists = await this.directoryExists(destination.path);
+			const dirExists = await this.directoryExists(destPath);
 			if (!dirExists) {
 				return {
 					success: false,
 					error: "dir_not_found",
-					message: `Directory not found: ${destination.path}`,
+					message: `Directory not found: ${destPath}`,
 				};
 			}
 
 			const { baseName, extension } = this.splitFileName(sourceName);
 			let counter = 0;
-			let targetPath = `${destination.path}/${sourceName}`;
+			let targetPath = joinPath(destPath, sourceName);
 
-			// 利用可能なファイル名を見つけるまでループ
-			while (await this.vault.adapter.exists(targetPath)) {
+			// 利用可能なファイル名を見つけるまでループ（Node.js fs を使用）
+			while (await this.fileSystem.fileExists(targetPath)) {
 				counter++;
 				const newFileName = `${baseName}_${counter}${extension}`;
-				targetPath = `${destination.path}/${newFileName}`;
+				targetPath = joinPath(destPath, newFileName);
 			}
 
-			// ファイルを書き込み
-			await this.vault.adapter.write(targetPath, sourceContent);
+			// ファイルを書き込み（Node.js fs を使用）
+			await this.fileSystem.writeFile(targetPath, sourceContent);
 
 			return {
 				success: true,
@@ -164,14 +281,19 @@ export class CopyService implements ICopyService {
 
 	/**
 	 * ディレクトリが存在するかチェック
-	 * Obsidianのvault.adapterでは、ディレクトリ内にファイルがあればディレクトリも存在する
+	 * 依存性注入されたファイルシステム実装を使用
 	 */
 	private async directoryExists(dirPath: string): Promise<boolean> {
-		// stat()を使ってディレクトリの存在を確認
-		const stats = await this.vault.adapter.stat(dirPath);
+		return this.fileSystem.directoryExists(dirPath);
+	}
 
-		// statsがnullの場合、ディレクトリは存在しない
-		// （初回ファイル書き込み時にディレクトリが自動作成されるため）
-		return stats !== null;
+	/**
+	 * ファイルが存在するかチェック
+	 * コマンドからの呼び出し用に公開
+	 */
+	async fileExists(destPath: string, fileName: string): Promise<boolean> {
+		const expandedPath = expandTilde(destPath);
+		const targetPath = joinPath(expandedPath, fileName);
+		return this.fileSystem.fileExists(targetPath);
 	}
 }

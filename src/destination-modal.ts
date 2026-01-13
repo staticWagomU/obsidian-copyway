@@ -34,9 +34,10 @@ export class DestinationModal extends Modal {
 				item.classList.add("is-selected");
 			}
 
-			// クリックイベントリスナーを追加（視覚的な選択のみ）
+			// クリックイベントリスナーを追加（選択を確定）
 			item.addEventListener("click", () => {
-				this.updateSelection(index);
+				this.selectedIndex = index;
+				this.confirmSelection();
 			});
 		});
 

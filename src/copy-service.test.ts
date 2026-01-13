@@ -1,12 +1,71 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import type {
 	CopySuccess,
 	CopyFailure,
 	CopyResult,
+	IFileSystem,
 } from "./copy-service";
-import { CopyService } from "./copy-service";
-import { Vault } from "obsidian";
+import { CopyService, expandTilde, joinPath } from "./copy-service";
 import type { CopyDestination } from "./types";
+// テスト環境では Node.js モジュールを直接インポート可能
+import os from "node:os";
+
+/**
+ * テスト用のモックファイルシステム
+ * Node.js fs モジュールの代わりに使用
+ */
+class MockFileSystem implements IFileSystem {
+	private existingDirs: Set<string> = new Set();
+	private existingFiles: Map<string, string> = new Map();
+	public writtenFiles: Map<string, string> = new Map();
+
+	addDirectory(path: string): void {
+		this.existingDirs.add(path);
+	}
+
+	addFile(path: string, content: string): void {
+		this.existingFiles.set(path, content);
+	}
+
+	async directoryExists(path: string): Promise<boolean> {
+		return this.existingDirs.has(path);
+	}
+
+	async fileExists(path: string): Promise<boolean> {
+		return this.existingFiles.has(path) || this.writtenFiles.has(path);
+	}
+
+	async writeFile(path: string, content: string): Promise<void> {
+		this.writtenFiles.set(path, content);
+		// existingFilesにも追加して、後続のfileExistsで見つかるようにする
+		this.existingFiles.set(path, content);
+	}
+
+	getWrittenContent(path: string): string | undefined {
+		return this.writtenFiles.get(path) ?? this.existingFiles.get(path);
+	}
+}
+
+describe("expandTilde - チルダ展開", () => {
+	it("~ で始まるパスをホームディレクトリに展開する", () => {
+		const homeDir = os.homedir();
+		expect(expandTilde("~/dev")).toBe(`${homeDir}/dev`);
+	});
+
+	it("~ のみの場合、ホームディレクトリを返す", () => {
+		const homeDir = os.homedir();
+		expect(expandTilde("~")).toBe(homeDir);
+	});
+
+	it("~ で始まらないパスはそのまま返す", () => {
+		expect(expandTilde("/usr/local/bin")).toBe("/usr/local/bin");
+		expect(expandTilde("relative/path")).toBe("relative/path");
+	});
+
+	it("パス途中の ~ は展開しない", () => {
+		expect(expandTilde("/home/user/~backup")).toBe("/home/user/~backup");
+	});
+});
 
 describe("CopyService - 型定義", () => {
 	it("CopySuccess型は成功フラグとパスを持つ", () => {
@@ -50,20 +109,19 @@ describe("CopyService - 型定義", () => {
 });
 
 describe("CopyService - 基本的なファイルコピー機能", () => {
-	let vault: Vault;
 	let service: CopyService;
 	let destination: CopyDestination;
+	let mockFs: MockFileSystem;
 
 	beforeEach(async () => {
-		vault = new Vault();
-		service = new CopyService(vault);
+		mockFs = new MockFileSystem();
+		mockFs.addDirectory("dest");
+		service = new CopyService(mockFs);
 		destination = {
 			path: "dest",
 			description: "Destination folder",
 			overwrite: false,
 		};
-		// ディレクトリを事前に作成
-		await vault.adapter.write("dest/.keep", "");
 	});
 
 	it("ファイルを指定されたパスにコピーできる", async () => {
@@ -75,14 +133,14 @@ describe("CopyService - 基本的なファイルコピー機能", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/source.md");
+			expect(result.path).toBe(joinPath("dest", "source.md"));
 		}
 	});
 
 	it("コピー後にファイルが存在することを確認できる", async () => {
 		await service.copy("Content", "test.md", destination);
 
-		const exists = await vault.adapter.exists("dest/test.md");
+		const exists = await mockFs.fileExists(joinPath("dest", "test.md"));
 		expect(exists).toBe(true);
 	});
 
@@ -90,19 +148,20 @@ describe("CopyService - 基本的なファイルコピー機能", () => {
 		const content = "Test Content";
 		await service.copy(content, "file.md", destination);
 
-		const saved = await vault.adapter.read("dest/file.md");
+		const saved = mockFs.getWrittenContent(joinPath("dest", "file.md"));
 		expect(saved).toBe(content);
 	});
 });
 
 describe("CopyService - 上書きモード", () => {
-	let vault: Vault;
 	let service: CopyService;
 	let destination: CopyDestination;
+	let mockFs: MockFileSystem;
 
 	beforeEach(() => {
-		vault = new Vault();
-		service = new CopyService(vault);
+		mockFs = new MockFileSystem();
+		mockFs.addDirectory("dest");
+		service = new CopyService(mockFs);
 		destination = {
 			path: "dest",
 			description: "Destination folder",
@@ -112,7 +171,7 @@ describe("CopyService - 上書きモード", () => {
 
 	it("上書きモードが有効な場合、同名ファイルが存在していても上書きできる", async () => {
 		// 既存ファイルを作成
-		await vault.adapter.write("dest/existing.md", "Old Content");
+		mockFs.addFile(joinPath("dest", "existing.md"), "Old Content");
 
 		// 上書きコピー
 		const result = await service.copy(
@@ -123,10 +182,10 @@ describe("CopyService - 上書きモード", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/existing.md");
+			expect(result.path).toBe(joinPath("dest", "existing.md"));
 		}
 
-		const content = await vault.adapter.read("dest/existing.md");
+		const content = mockFs.getWrittenContent(joinPath("dest", "existing.md"));
 		expect(content).toBe("New Content");
 	});
 
@@ -135,7 +194,7 @@ describe("CopyService - 上書きモード", () => {
 		destination.overwrite = false;
 
 		// 既存ファイルを作成
-		await vault.adapter.write("dest/existing.md", "Old Content");
+		mockFs.addFile(joinPath("dest", "existing.md"), "Old Content");
 
 		// コピー試行
 		const result = await service.copy(
@@ -151,31 +210,30 @@ describe("CopyService - 上書きモード", () => {
 		}
 
 		// 元のファイルが変更されていないことを確認
-		const content = await vault.adapter.read("dest/existing.md");
+		const content = mockFs.getWrittenContent(joinPath("dest", "existing.md"));
 		expect(content).toBe("Old Content");
 	});
 });
 
 describe("CopyService - リネームモード（連番付与）", () => {
-	let vault: Vault;
 	let service: CopyService;
 	let destination: CopyDestination;
+	let mockFs: MockFileSystem;
 
 	beforeEach(async () => {
-		vault = new Vault();
-		service = new CopyService(vault);
+		mockFs = new MockFileSystem();
+		mockFs.addDirectory("dest");
+		service = new CopyService(mockFs);
 		destination = {
 			path: "dest",
 			description: "Destination folder",
 			overwrite: false,
 		};
-		// ディレクトリを事前に作成
-		await vault.adapter.write("dest/.keep", "");
 	});
 
 	it("同名ファイルが存在する場合、_1を付与してコピーできる", async () => {
 		// 既存ファイルを作成
-		await vault.adapter.write("dest/file.md", "Original");
+		mockFs.addFile(joinPath("dest", "file.md"), "Original");
 
 		// リネームコピー
 		const result = await service.copyWithRename(
@@ -186,18 +244,18 @@ describe("CopyService - リネームモード（連番付与）", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/file_1.md");
+			expect(result.path).toBe(joinPath("dest", "file_1.md"));
 		}
 
 		// 両方のファイルが存在することを確認
-		expect(await vault.adapter.exists("dest/file.md")).toBe(true);
-		expect(await vault.adapter.exists("dest/file_1.md")).toBe(true);
+		expect(await mockFs.fileExists(joinPath("dest", "file.md"))).toBe(true);
+		expect(await mockFs.fileExists(joinPath("dest", "file_1.md"))).toBe(true);
 	});
 
 	it("_1が存在する場合、_2を付与してコピーできる", async () => {
 		// 既存ファイルを作成
-		await vault.adapter.write("dest/note.md", "Original");
-		await vault.adapter.write("dest/note_1.md", "First Copy");
+		mockFs.addFile(joinPath("dest", "note.md"), "Original");
+		mockFs.addFile(joinPath("dest", "note_1.md"), "First Copy");
 
 		// リネームコピー
 		const result = await service.copyWithRename(
@@ -208,16 +266,16 @@ describe("CopyService - リネームモード（連番付与）", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/note_2.md");
+			expect(result.path).toBe(joinPath("dest", "note_2.md"));
 		}
 	});
 
 	it("_1, _2, _3まで存在する場合、_4を付与してコピーできる", async () => {
 		// 既存ファイルを作成
-		await vault.adapter.write("dest/doc.md", "Original");
-		await vault.adapter.write("dest/doc_1.md", "Copy 1");
-		await vault.adapter.write("dest/doc_2.md", "Copy 2");
-		await vault.adapter.write("dest/doc_3.md", "Copy 3");
+		mockFs.addFile(joinPath("dest", "doc.md"), "Original");
+		mockFs.addFile(joinPath("dest", "doc_1.md"), "Copy 1");
+		mockFs.addFile(joinPath("dest", "doc_2.md"), "Copy 2");
+		mockFs.addFile(joinPath("dest", "doc_3.md"), "Copy 3");
 
 		// リネームコピー
 		const result = await service.copyWithRename(
@@ -228,7 +286,7 @@ describe("CopyService - リネームモード（連番付与）", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/doc_4.md");
+			expect(result.path).toBe(joinPath("dest", "doc_4.md"));
 		}
 	});
 
@@ -242,13 +300,13 @@ describe("CopyService - リネームモード（連番付与）", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/new.md");
+			expect(result.path).toBe(joinPath("dest", "new.md"));
 		}
 	});
 
 	it("拡張子が複数ドットを含む場合でも正しく処理できる", async () => {
 		// 既存ファイルを作成
-		await vault.adapter.write("dest/file.test.md", "Original");
+		mockFs.addFile(joinPath("dest", "file.test.md"), "Original");
 
 		// リネームコピー
 		const result = await service.copyWithRename(
@@ -259,19 +317,20 @@ describe("CopyService - リネームモード（連番付与）", () => {
 
 		expect(result.success).toBe(true);
 		if (result.success) {
-			expect(result.path).toBe("dest/file.test_1.md");
+			expect(result.path).toBe(joinPath("dest", "file.test_1.md"));
 		}
 	});
 });
 
 describe("CopyService - ディレクトリ存在チェック", () => {
-	let vault: Vault;
 	let service: CopyService;
 	let destination: CopyDestination;
+	let mockFs: MockFileSystem;
 
 	beforeEach(() => {
-		vault = new Vault();
-		service = new CopyService(vault);
+		mockFs = new MockFileSystem();
+		// ディレクトリは追加しない（存在しない状態でテスト）
+		service = new CopyService(mockFs);
 		destination = {
 			path: "dest",
 			description: "Destination folder",
@@ -291,8 +350,8 @@ describe("CopyService - ディレクトリ存在チェック", () => {
 	});
 
 	it("コピー先ディレクトリが存在する場合、正常にコピーできる", async () => {
-		// ディレクトリを作成（ダミーファイルを置く）
-		await vault.adapter.write("dest/.keep", "");
+		// ディレクトリを作成
+		mockFs.addDirectory("dest");
 
 		// コピー試行
 		const result = await service.copy("Content", "file.md", destination);
@@ -315,29 +374,50 @@ describe("CopyService - ディレクトリ存在チェック", () => {
 	});
 });
 
+/**
+ * テスト用のエラーを発生させるファイルシステム
+ */
+class ErrorThrowingFileSystem implements IFileSystem {
+	private existingDirs: Set<string> = new Set();
+	private existingFiles: Set<string> = new Set();
+	private errorMessage: string;
+
+	constructor(errorMessage: string) {
+		this.errorMessage = errorMessage;
+	}
+
+	addDirectory(path: string): void {
+		this.existingDirs.add(path);
+	}
+
+	async directoryExists(path: string): Promise<boolean> {
+		return this.existingDirs.has(path);
+	}
+
+	async fileExists(path: string): Promise<boolean> {
+		return this.existingFiles.has(path);
+	}
+
+	async writeFile(_path: string, _content: string): Promise<void> {
+		throw new Error(this.errorMessage);
+	}
+}
+
 describe("CopyService - I/Oエラーハンドリング", () => {
-	let vault: Vault;
-	let service: CopyService;
 	let destination: CopyDestination;
 
 	beforeEach(async () => {
-		vault = new Vault();
-		service = new CopyService(vault);
 		destination = {
 			path: "dest",
 			description: "Destination folder",
 			overwrite: false,
 		};
-		// ディレクトリを事前に作成
-		await vault.adapter.write("dest/.keep", "");
 	});
 
 	it("write時にエラーが発生した場合、io_errorを返す", async () => {
-		// write()をモックしてエラーをスロー
-		const originalWrite = vault.adapter.write.bind(vault.adapter);
-		vault.adapter.write = async () => {
-			throw new Error("Disk full");
-		};
+		const errorFs = new ErrorThrowingFileSystem("Disk full");
+		errorFs.addDirectory("dest");
+		const service = new CopyService(errorFs);
 
 		const result = await service.copy("Content", "file.md", destination);
 
@@ -346,17 +426,12 @@ describe("CopyService - I/Oエラーハンドリング", () => {
 			expect(result.error).toBe("io_error");
 			expect(result.message).toContain("I/O error");
 		}
-
-		// 元に戻す
-		vault.adapter.write = originalWrite;
 	});
 
 	it("copyWithRename時にwrite エラーが発生した場合、io_errorを返す", async () => {
-		// write()をモックしてエラーをスロー
-		const originalWrite = vault.adapter.write.bind(vault.adapter);
-		vault.adapter.write = async () => {
-			throw new Error("Permission denied");
-		};
+		const errorFs = new ErrorThrowingFileSystem("Permission denied");
+		errorFs.addDirectory("dest");
+		const service = new CopyService(errorFs);
 
 		const result = await service.copyWithRename(
 			"Content",
@@ -368,8 +443,5 @@ describe("CopyService - I/Oエラーハンドリング", () => {
 		if (!result.success) {
 			expect(result.error).toBe("io_error");
 		}
-
-		// 元に戻す
-		vault.adapter.write = originalWrite;
 	});
 });

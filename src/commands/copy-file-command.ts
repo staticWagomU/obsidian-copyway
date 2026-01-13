@@ -81,8 +81,7 @@ export class CopyFileCommand {
 		}
 
 		// overwrite=falseの場合、ファイル存在チェック
-		const targetPath = `${destination.path}/${fileName}`;
-		const exists = await this.app.vault.adapter.exists(targetPath);
+		const exists = await this.copyService.fileExists(destination.path, fileName);
 
 		if (!exists) {
 			// ファイルが存在しない場合は直接コピー
