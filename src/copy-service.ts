@@ -1,4 +1,5 @@
 import type { CopyDestination } from "./types";
+import type { Vault } from "obsidian";
 
 /**
  * コピー成功時の結果型
@@ -42,12 +43,20 @@ export interface ICopyService {
  * ファイルコピーサービス
  */
 export class CopyService implements ICopyService {
+	constructor(private vault: Vault) {}
+
 	async copy(
-		_sourceContent: string,
-		_sourceName: string,
-		_destination: CopyDestination,
+		sourceContent: string,
+		sourceName: string,
+		destination: CopyDestination,
 	): Promise<CopyResult> {
-		// 実装は後のサブタスクで追加
-		throw new Error("Not implemented");
+		const targetPath = `${destination.path}/${sourceName}`;
+
+		await this.vault.adapter.write(targetPath, sourceContent);
+
+		return {
+			success: true,
+			path: targetPath,
+		};
 	}
 }

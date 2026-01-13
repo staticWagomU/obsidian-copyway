@@ -187,7 +187,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-010",
         title: "基本的なファイルコピー機能を実装（正常系）",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {

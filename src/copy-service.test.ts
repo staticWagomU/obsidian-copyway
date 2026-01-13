@@ -1,10 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import type {
 	CopySuccess,
 	CopyFailure,
 	CopyResult,
 	ICopyService,
 } from "./copy-service";
+import { CopyService } from "./copy-service";
+import { Vault } from "obsidian";
+import type { CopyDestination } from "./types";
 
 describe("CopyService - 型定義", () => {
 	it("CopySuccess型は成功フラグとパスを持つ", () => {
@@ -44,5 +47,49 @@ describe("CopyService - 型定義", () => {
 		if (!failure.success) {
 			expect(failure.error).toBe("io_error");
 		}
+	});
+});
+
+describe("CopyService - 基本的なファイルコピー機能", () => {
+	let vault: Vault;
+	let service: CopyService;
+	let destination: CopyDestination;
+
+	beforeEach(() => {
+		vault = new Vault();
+		service = new CopyService(vault);
+		destination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+		};
+	});
+
+	it("ファイルを指定されたパスにコピーできる", async () => {
+		const result = await service.copy(
+			"Hello World",
+			"source.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe("dest/source.md");
+		}
+	});
+
+	it("コピー後にファイルが存在することを確認できる", async () => {
+		await service.copy("Content", "test.md", destination);
+
+		const exists = await vault.adapter.exists("dest/test.md");
+		expect(exists).toBe(true);
+	});
+
+	it("コピーしたファイルの内容が正しい", async () => {
+		const content = "Test Content";
+		await service.copy(content, "file.md", destination);
+
+		const saved = await vault.adapter.read("dest/file.md");
+		expect(saved).toBe(content);
 	});
 });
