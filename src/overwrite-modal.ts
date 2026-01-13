@@ -29,34 +29,26 @@ export class OverwriteModal extends Modal {
 			text: `File "${this.filename}" already exists.`,
 		});
 
-		// Overwriteボタン
-		const overwriteBtn = contentEl.createEl("button", {
-			text: "Overwrite",
-		});
-		overwriteBtn.addEventListener("click", () => {
-			this.handleResult("overwrite");
-		});
-
-		// Renameボタン
-		const renameBtn = contentEl.createEl("button", {
-			text: "Rename",
-		});
-		renameBtn.addEventListener("click", () => {
-			this.handleResult("rename");
-		});
-
-		// Cancelボタン
-		const cancelBtn = contentEl.createEl("button", {
-			text: "Cancel",
-		});
-		cancelBtn.addEventListener("click", () => {
-			this.handleResult("cancel");
-		});
+		// ボタンを作成
+		this.createButton(contentEl, "Overwrite", "overwrite");
+		this.createButton(contentEl, "Rename", "rename");
+		this.createButton(contentEl, "Cancel", "cancel");
 	}
 
 	onClose(): void {
 		const { contentEl } = this;
 		contentEl.empty();
+	}
+
+	private createButton(
+		container: HTMLElement,
+		label: string,
+		result: OverwriteResult,
+	): void {
+		const button = container.createEl("button", { text: label });
+		button.addEventListener("click", () => {
+			this.handleResult(result);
+		});
 	}
 
 	private handleResult(result: OverwriteResult): void {

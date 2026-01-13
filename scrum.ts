@@ -219,7 +219,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-5.7",
         title: "コードのリファクタリングと最終調整（REFACTOR）",
-        status: "red",
+        status: "done",
         test_file: "src/overwrite-modal.test.ts",
       },
     ],
