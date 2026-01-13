@@ -205,7 +205,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-013",
         title: "コピー先ディレクトリ存在チェックとエラー処理を実装",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {

@@ -26,6 +26,18 @@ export class DataAdapter {
 
 	async write(path: string, data: string): Promise<void> {
 		const now = Date.now();
+
+		// 親ディレクトリを自動作成
+		const dirPath = path.substring(0, path.lastIndexOf("/"));
+		if (dirPath && !this.stats.has(dirPath)) {
+			this.stats.set(dirPath, {
+				type: "folder",
+				ctime: now,
+				mtime: now,
+				size: 0,
+			});
+		}
+
 		this.files.set(path, data);
 
 		const existingStats = this.stats.get(path);

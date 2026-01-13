@@ -50,6 +50,16 @@ export class CopyService implements ICopyService {
 		sourceName: string,
 		destination: CopyDestination,
 	): Promise<CopyResult> {
+		// ディレクトリ存在チェック
+		const dirExists = await this.directoryExists(destination.path);
+		if (!dirExists) {
+			return {
+				success: false,
+				error: "dir_not_found",
+				message: `Directory not found: ${destination.path}`,
+			};
+		}
+
 		const targetPath = `${destination.path}/${sourceName}`;
 
 		// ファイル存在チェック
@@ -82,6 +92,16 @@ export class CopyService implements ICopyService {
 		sourceName: string,
 		destination: CopyDestination,
 	): Promise<CopyResult> {
+		// ディレクトリ存在チェック
+		const dirExists = await this.directoryExists(destination.path);
+		if (!dirExists) {
+			return {
+				success: false,
+				error: "dir_not_found",
+				message: `Directory not found: ${destination.path}`,
+			};
+		}
+
 		const { baseName, extension } = this.splitFileName(sourceName);
 		let counter = 0;
 		let targetPath = `${destination.path}/${sourceName}`;
@@ -119,5 +139,18 @@ export class CopyService implements ICopyService {
 			baseName: fileName.slice(0, lastDotIndex),
 			extension: fileName.slice(lastDotIndex),
 		};
+	}
+
+	/**
+	 * ディレクトリが存在するかチェック
+	 * Obsidianのvault.adapterでは、ディレクトリ内にファイルがあればディレクトリも存在する
+	 */
+	private async directoryExists(dirPath: string): Promise<boolean> {
+		// stat()を使ってディレクトリの存在を確認
+		const stats = await this.vault.adapter.stat(dirPath);
+
+		// statsがnullの場合、ディレクトリは存在しない
+		// （初回ファイル書き込み時にディレクトリが自動作成されるため）
+		return stats !== null;
 	}
 }

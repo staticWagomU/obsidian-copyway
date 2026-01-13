@@ -55,7 +55,7 @@ describe("CopyService - 基本的なファイルコピー機能", () => {
 	let service: CopyService;
 	let destination: CopyDestination;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		vault = new Vault();
 		service = new CopyService(vault);
 		destination = {
@@ -63,6 +63,8 @@ describe("CopyService - 基本的なファイルコピー機能", () => {
 			description: "Destination folder",
 			overwrite: false,
 		};
+		// ディレクトリを事前に作成
+		await vault.adapter.write("dest/.keep", "");
 	});
 
 	it("ファイルを指定されたパスにコピーできる", async () => {
@@ -160,7 +162,7 @@ describe("CopyService - リネームモード（連番付与）", () => {
 	let service: CopyService;
 	let destination: CopyDestination;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		vault = new Vault();
 		service = new CopyService(vault);
 		destination = {
@@ -168,6 +170,8 @@ describe("CopyService - リネームモード（連番付与）", () => {
 			description: "Destination folder",
 			overwrite: false,
 		};
+		// ディレクトリを事前に作成
+		await vault.adapter.write("dest/.keep", "");
 	});
 
 	it("同名ファイルが存在する場合、_1を付与してコピーできる", async () => {
@@ -257,6 +261,57 @@ describe("CopyService - リネームモード（連番付与）", () => {
 		expect(result.success).toBe(true);
 		if (result.success) {
 			expect(result.path).toBe("dest/file.test_1.md");
+		}
+	});
+});
+
+describe("CopyService - ディレクトリ存在チェック", () => {
+	let vault: Vault;
+	let service: CopyService;
+	let destination: CopyDestination;
+
+	beforeEach(() => {
+		vault = new Vault();
+		service = new CopyService(vault);
+		destination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+		};
+	});
+
+	it("コピー先ディレクトリが存在しない場合、dir_not_foundエラーを返す", async () => {
+		// ディレクトリを作成しない状態でコピー試行
+		const result = await service.copy("Content", "file.md", destination);
+
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error).toBe("dir_not_found");
+			expect(result.message).toContain("dest");
+		}
+	});
+
+	it("コピー先ディレクトリが存在する場合、正常にコピーできる", async () => {
+		// ディレクトリを作成（ダミーファイルを置く）
+		await vault.adapter.write("dest/.keep", "");
+
+		// コピー試行
+		const result = await service.copy("Content", "file.md", destination);
+
+		expect(result.success).toBe(true);
+	});
+
+	it("copyWithRenameでもディレクトリ存在チェックが機能する", async () => {
+		// ディレクトリを作成しない状態でコピー試行
+		const result = await service.copyWithRename(
+			"Content",
+			"file.md",
+			destination,
+		);
+
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error).toBe("dir_not_found");
 		}
 	});
 });
