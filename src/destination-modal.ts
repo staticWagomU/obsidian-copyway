@@ -33,6 +33,11 @@ export class DestinationModal extends Modal {
 			if (index === this.selectedIndex) {
 				item.classList.add("is-selected");
 			}
+
+			// クリックイベントリスナーを追加（視覚的な選択のみ）
+			item.addEventListener("click", () => {
+				this.updateSelection(index);
+			});
 		});
 
 		// キーボードイベントリスナーを追加
@@ -46,9 +51,35 @@ export class DestinationModal extends Modal {
 		contentEl.empty();
 	}
 
+	private updateSelection(index: number): void {
+		const { contentEl } = this;
+		const items = contentEl.querySelectorAll(".destination-item");
+
+		// 現在の選択を解除
+		items[this.selectedIndex].classList.remove("is-selected");
+
+		// 新しい項目を選択（視覚的な変更のみ）
+		this.selectedIndex = index;
+		items[this.selectedIndex].classList.add("is-selected");
+	}
+
+	private confirmSelection(index: number): void {
+		// 選択を更新
+		this.updateSelection(index);
+
+		// コールバックを実行してモーダルを閉じる
+		this.onSelect(this.destinations[this.selectedIndex]);
+		this.close();
+	}
+
 	private handleKeyDown(event: KeyboardEvent): void {
 		const { contentEl } = this;
 		const items = contentEl.querySelectorAll(".destination-item");
+
+		// モーダルが閉じられた後はイベントを処理しない
+		if (items.length === 0) {
+			return;
+		}
 
 		switch (event.key) {
 			case "ArrowDown":

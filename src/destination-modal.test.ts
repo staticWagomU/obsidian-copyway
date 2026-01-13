@@ -224,7 +224,7 @@ describe("DestinationModal", () => {
 			expect(items[2].classList.contains("is-selected")).toBe(true);
 		});
 
-		it("項目をクリックするとコールバックが実行され、モーダルが閉じる", () => {
+		it("項目をクリックしてEnterでコールバックが実行され、モーダルが閉じる", () => {
 			const destinations: CopyDestination[] = [
 				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
 				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
@@ -239,6 +239,13 @@ describe("DestinationModal", () => {
 
 			// 1番目をクリック
 			items[1].dispatchEvent(new MouseEvent("click"));
+
+			// クリック後は選択されるがまだコールバックは呼ばれない
+			expect(items[1].classList.contains("is-selected")).toBe(true);
+			expect(onSelect).not.toHaveBeenCalled();
+
+			// Enterキーで確定
+			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
 
 			expect(onSelect).toHaveBeenCalledWith(destinations[1]);
 			expect(closeSpy).toHaveBeenCalled();

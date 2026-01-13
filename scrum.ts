@@ -206,25 +206,25 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-004-5",
         title: "クリック操作のテスト追加（RED）",
-        status: "green",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
       {
         id: "ST-004-6",
         title: "クリック操作の実装（GREEN）",
-        status: "red",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
       {
         id: "ST-004-7",
         title: "コールバック実行とモーダルクローズのテスト追加（RED）",
-        status: "red",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
       {
         id: "ST-004-8",
         title: "コールバック実行とモーダルクローズの実装（GREEN）",
-        status: "red",
+        status: "done",
         test_file: "src/destination-modal.test.ts",
       },
       {
