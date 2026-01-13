@@ -20,5 +20,14 @@ export class CopyFileCommand {
 			this.notice("No active file to copy");
 			return;
 		}
+
+		// コピー先の取得
+		const destinations = this.getDestinations();
+		if (destinations.length === 0) {
+			this.notice(
+				"No copy destinations configured. Please add destinations in settings.",
+			);
+			return;
+		}
 	}
 }

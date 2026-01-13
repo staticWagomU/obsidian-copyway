@@ -103,4 +103,74 @@ describe("CopyFileCommand - Phase 1: コマンド登録と基本構造", () => {
 			expect(mockNotice).not.toHaveBeenCalledWith("No active file to copy");
 		});
 	});
+
+	describe("ST-6.3: コピー先0件エラー", () => {
+		it("コピー先が0件の場合、エラー通知を表示する", async () => {
+			// アクティブファイルが存在する
+			const mockFile: TFile = {
+				name: "test.md",
+				path: "test.md",
+			} as TFile;
+
+			mockApp.workspace = {
+				getActiveFile: vi.fn(() => mockFile),
+			} as any;
+
+			// コピー先が0件
+			mockGetDestinations = vi.fn(() => []);
+
+			const command = new CopyFileCommand(
+				mockApp,
+				mockCopyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			await command.execute();
+
+			// エラー通知が呼ばれることを確認
+			expect(mockNotice).toHaveBeenCalledWith(
+				"No copy destinations configured. Please add destinations in settings.",
+			);
+		});
+
+		it("コピー先が1件以上の場合、このエラーは表示されない", async () => {
+			// アクティブファイルが存在する
+			const mockFile: TFile = {
+				name: "test.md",
+				path: "test.md",
+			} as TFile;
+
+			mockApp.workspace = {
+				getActiveFile: vi.fn(() => mockFile),
+			} as any;
+
+			// コピー先が1件存在
+			const mockDestination: CopyDestination = {
+				path: "/test/path",
+				description: "Test destination",
+				overwrite: false,
+			};
+			mockGetDestinations = vi.fn(() => [mockDestination]);
+
+			// vault mock追加（コピー処理用）
+			mockApp.vault = {
+				read: vi.fn().mockResolvedValue("file content"),
+			} as any;
+
+			const command = new CopyFileCommand(
+				mockApp,
+				mockCopyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			await command.execute();
+
+			// "No copy destinations configured"は呼ばれない
+			expect(mockNotice).not.toHaveBeenCalledWith(
+				"No copy destinations configured. Please add destinations in settings.",
+			);
+		});
+	});
 });

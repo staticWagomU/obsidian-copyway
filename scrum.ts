@@ -221,8 +221,8 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-6.3",
         title: "コピー先0件エラーの実装（RED-GREEN-REFACTOR）",
-        status: "red",
-        test_file: "src/commands/CopyFileCommand.test.ts",
+        status: "done",
+        test_file: "src/commands/copy-file-command.test.ts",
       },
 
       // Phase 2: Destination selection flow
