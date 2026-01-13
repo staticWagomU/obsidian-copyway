@@ -134,13 +134,14 @@ const dashboard: ScrumDashboard = {
       title: "コピー先選択モーダル",
       description:
         "ユーザーとして、複数のコピー先から選択できることで、目的に応じた場所にコピーできる",
-      status: "draft",
+      status: "ready",
       acceptance_criteria: [
         "ディスクリプションのみが表示される（パス非表示）",
         "キーボード操作（↑↓選択、Enter決定、Esc閉じる）が動作する",
         "クリックで選択できる",
         "選択後にコピー処理が実行される",
       ],
+      story_points: 3,
     },
     {
       id: "PBI-005",
