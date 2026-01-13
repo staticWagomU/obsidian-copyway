@@ -26,21 +26,27 @@ export default class CopywayPlugin extends Plugin {
 		// 設定タブを追加
 		this.addSettingTab(new CopywaySettingTab(this.app, this));
 
+		// コピーコマンドのコールバックを共通化
+		const copyFileCallback = async () => {
+			const copyService = new CopyService();
+			const command = new CopyFileCommand(
+				this.app,
+				copyService,
+				() => this.settings.destinations,
+				(message: string) => new Notice(message),
+			);
+			await command.execute();
+		};
+
 		// コピーコマンドを登録
 		this.addCommand({
 			id: "copy-file",
 			name: "Copy file to destination",
-			callback: async () => {
-				const copyService = new CopyService(this.app.vault);
-				const command = new CopyFileCommand(
-					this.app,
-					copyService,
-					() => this.settings.destinations,
-					(message: string) => new Notice(message),
-				);
-				await command.execute();
-			},
+			callback: copyFileCallback,
 		});
+
+		// リボンにコピーコマンドのアイコンを追加
+		this.addRibbonIcon("copy", "Copy file to destination", copyFileCallback);
 	}
 
 	onunload() {
