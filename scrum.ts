@@ -201,10 +201,140 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "",
-    status: "planning",
-    pbi_id: null,
-    subtasks: [],
+    goal: "コマンドパレットからファイルコピーを実行できる統合機能を、エンドツーエンドのTDDサイクルで完成させる",
+    status: "active",
+    pbi_id: "PBI-006",
+    subtasks: [
+      // Phase 1: Command registration and basic structure
+      {
+        id: "ST-6.1",
+        title: "コマンド登録とコールバック構造の実装（RED）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.2",
+        title: "アクティブファイルなしエラーの実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.3",
+        title: "コピー先0件エラーの実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+
+      // Phase 2: Destination selection flow
+      {
+        id: "ST-6.4",
+        title: "コピー先1件時の直接コピー処理の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.5",
+        title: "コピー先2件以上時のDestinationModal表示の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.6",
+        title: "DestinationModalでの選択とコピー処理の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.7",
+        title: "DestinationModalキャンセル処理の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+
+      // Phase 3: Overwrite confirmation flow
+      {
+        id: "ST-6.8",
+        title: "overwrite=true時の直接上書きコピーの実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.9",
+        title: "overwrite=false時のOverwriteModal表示の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.10",
+        title: "OverwriteModalでのOverwriteボタン処理の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.11",
+        title: "OverwriteModalでのRenameボタン処理の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.12",
+        title: "OverwriteModalでのCancelボタン処理の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+
+      // Phase 4: Notification system (8 patterns)
+      {
+        id: "ST-6.13",
+        title: "新規ファイルコピー成功通知の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.14",
+        title: "上書きコピー成功通知の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.15",
+        title: "リネームコピー成功通知の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.16",
+        title: "コピー先ディレクトリ存在エラー通知の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.17",
+        title: "I/Oエラー通知の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+      {
+        id: "ST-6.18",
+        title: "権限エラー通知の実装（RED-GREEN-REFACTOR）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.test.ts",
+      },
+
+      // Phase 5: Integration and E2E tests
+      {
+        id: "ST-6.19",
+        title: "エンドツーエンドシナリオテストの実装（コマンド→モーダル→コピー完了）",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.integration.test.ts",
+      },
+      {
+        id: "ST-6.20",
+        title: "全通知パターン（成功3+エラー5）の統合テスト",
+        status: "red",
+        test_file: "src/commands/CopyFileCommand.integration.test.ts",
+      },
+    ],
   },
 
   retrospective_insights: [
