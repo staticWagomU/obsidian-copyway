@@ -1,4 +1,5 @@
 import { builtinModules } from "node:module";
+import path from "node:path";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
 
@@ -68,7 +69,7 @@ export default defineConfig(({ mode }) => {
 				exclude: ["node_modules/", "src/**/*.test.ts"],
 			},
 			alias: {
-				obsidian: "/Users/wagomu/dev/github.com/staticWagomU/obsidian-copyway/src/__mocks__/obsidian.ts",
+				obsidian: path.resolve(__dirname, "src/__mocks__/obsidian.ts"),
 			},
 		},
 	};

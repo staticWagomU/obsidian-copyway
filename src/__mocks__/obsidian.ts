@@ -89,6 +89,12 @@ export class Plugin {
 
 	addSettingTab(_settingTab: PluginSettingTab): void {}
 
+	addCommand(_command: unknown): void {}
+
+	addRibbonIcon(_icon: string, _title: string, _callback: () => void): HTMLElement {
+		return document.createElement("div");
+	}
+
 	onload(): void | Promise<void> {}
 	onunload(): void {}
 }
