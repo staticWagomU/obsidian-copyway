@@ -69,4 +69,70 @@ describe("OverwriteModal", () => {
 			expect(mockContentEl.empty).toHaveBeenCalled();
 		});
 	});
+
+	describe("Overwriteボタン動作", () => {
+		it("OverwriteボタンクリックでonResultが'overwrite'で呼ばれる", () => {
+			const onResult = vi.fn();
+			const modal = new OverwriteModal(mockApp, "test.md", onResult);
+
+			let overwriteClickHandler: (() => void) | null = null;
+
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					const mockEl = {
+						addEventListener: vi.fn((event: string, handler: () => void) => {
+							if (options?.text === "Overwrite") {
+								overwriteClickHandler = handler;
+							}
+						}),
+					};
+					return mockEl;
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.close = vi.fn();
+
+			modal.onOpen();
+
+			// Overwriteボタンのクリックハンドラを実行
+			expect(overwriteClickHandler).toBeDefined();
+			overwriteClickHandler?.();
+
+			expect(onResult).toHaveBeenCalledWith("overwrite");
+		});
+
+		it("Overwriteボタンクリック後にモーダルが閉じられる", () => {
+			const onResult = vi.fn();
+			const modal = new OverwriteModal(mockApp, "test.md", onResult);
+
+			let overwriteClickHandler: (() => void) | null = null;
+
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					const mockEl = {
+						addEventListener: vi.fn((event: string, handler: () => void) => {
+							if (options?.text === "Overwrite") {
+								overwriteClickHandler = handler;
+							}
+						}),
+					};
+					return mockEl;
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+			const closeSpy = vi.fn();
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.close = closeSpy;
+
+			modal.onOpen();
+			overwriteClickHandler?.();
+
+			expect(closeSpy).toHaveBeenCalled();
+		});
+	});
 });
