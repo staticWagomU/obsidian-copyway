@@ -199,4 +199,77 @@ describe("DestinationModal", () => {
 			expect(closeSpy).toHaveBeenCalled();
 		});
 	});
+
+	describe("クリック操作", () => {
+		it("項目をクリックすると選択される", () => {
+			const destinations: CopyDestination[] = [
+				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
+				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
+				{ path: "/path/to/dest3", description: "Archive", overwrite: false },
+			];
+			const modal = new DestinationModal({} as any, destinations, () => {});
+
+			modal.open();
+
+			const items = modal.contentEl.querySelectorAll(".destination-item");
+
+			// 最初は0番目が選択
+			expect(items[0].classList.contains("is-selected")).toBe(true);
+
+			// 2番目をクリック
+			items[2].dispatchEvent(new MouseEvent("click"));
+
+			// 2番目が選択される
+			expect(items[0].classList.contains("is-selected")).toBe(false);
+			expect(items[2].classList.contains("is-selected")).toBe(true);
+		});
+
+		it("項目をクリックするとコールバックが実行され、モーダルが閉じる", () => {
+			const destinations: CopyDestination[] = [
+				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
+				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
+			];
+			const onSelect = vi.fn();
+			const modal = new DestinationModal({} as any, destinations, onSelect);
+			const closeSpy = vi.spyOn(modal, "close");
+
+			modal.open();
+
+			const items = modal.contentEl.querySelectorAll(".destination-item");
+
+			// 1番目をクリック
+			items[1].dispatchEvent(new MouseEvent("click"));
+
+			expect(onSelect).toHaveBeenCalledWith(destinations[1]);
+			expect(closeSpy).toHaveBeenCalled();
+		});
+
+		it("クリックとキーボード操作を組み合わせて使える", () => {
+			const destinations: CopyDestination[] = [
+				{ path: "/path/to/dest1", description: "Work notes", overwrite: false },
+				{ path: "/path/to/dest2", description: "Personal vault", overwrite: true },
+				{ path: "/path/to/dest3", description: "Archive", overwrite: false },
+			];
+			const onSelect = vi.fn();
+			const modal = new DestinationModal({} as any, destinations, onSelect);
+
+			modal.open();
+
+			const items = modal.contentEl.querySelectorAll(".destination-item");
+
+			// 1番目をクリック
+			items[1].dispatchEvent(new MouseEvent("click"));
+			expect(items[1].classList.contains("is-selected")).toBe(true);
+
+			// ↓キーで2番目に移動
+			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+			expect(items[1].classList.contains("is-selected")).toBe(false);
+			expect(items[2].classList.contains("is-selected")).toBe(true);
+
+			// Enterキーで選択
+			modal.contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+
+			expect(onSelect).toHaveBeenCalledWith(destinations[2]);
+		});
+	});
 });
