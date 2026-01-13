@@ -189,7 +189,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-5.2",
         title: "OverwriteModalの基本表示機能実装（GREEN）",
-        status: "red",
+        status: "green",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
