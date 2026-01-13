@@ -267,4 +267,58 @@ describe("OverwriteModal", () => {
 			expect(closeSpy).toHaveBeenCalled();
 		});
 	});
+
+	describe("ファイル名表示機能", () => {
+		it("onOpen()でファイル名を含むメッセージが表示される", () => {
+			const onResult = vi.fn();
+			const filename = "my-note.md";
+			const modal = new OverwriteModal(mockApp, filename, onResult);
+
+			let messageText = "";
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					if (tag === "p" && options?.text) {
+						messageText = options.text;
+					}
+					return {
+						addEventListener: vi.fn(),
+					};
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+
+			modal.onOpen();
+
+			// ファイル名がメッセージに含まれていることを確認
+			expect(messageText).toContain(filename);
+			expect(messageText).toContain("already exists");
+		});
+
+		it("異なるファイル名でも正しく表示される", () => {
+			const onResult = vi.fn();
+			const filename = "another-file.txt";
+			const modal = new OverwriteModal(mockApp, filename, onResult);
+
+			let messageText = "";
+			const mockContentEl = {
+				empty: vi.fn(),
+				createEl: vi.fn((tag: string, options?: { text?: string }) => {
+					if (tag === "p" && options?.text) {
+						messageText = options.text;
+					}
+					return {
+						addEventListener: vi.fn(),
+					};
+				}),
+			};
+			// @ts-expect-error - モックのため型エラーを無視
+			modal.contentEl = mockContentEl;
+
+			modal.onOpen();
+
+			expect(messageText).toContain(filename);
+		});
+	});
 });

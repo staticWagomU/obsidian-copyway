@@ -213,7 +213,7 @@ const dashboard: ScrumDashboard = {
       {
         id: "ST-5.6",
         title: "ファイル名表示機能のテストと実装（RED→GREEN）",
-        status: "red",
+        status: "green",
         test_file: "src/overwrite-modal.test.ts",
       },
       {
