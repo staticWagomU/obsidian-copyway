@@ -175,10 +175,71 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    goal: "",
-    status: "planning",
-    pbi_id: null,
-    subtasks: [],
+    goal: "ユーザーが複数のコピー先から直感的に選択できるモーダルUIを実装し、キーボード操作とクリック操作の両方で快適に利用できるようにする",
+    status: "active",
+    pbi_id: "PBI-004",
+    subtasks: [
+      {
+        id: "ST-004-1",
+        title: "DestinationModalクラスの基本構造とテストファイルの作成（RED）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-2",
+        title: "DestinationModalの基本的なレンダリング機能の実装（GREEN）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-3",
+        title: "キーボード操作（↑↓選択、Enter決定、Esc閉じる）のテスト追加（RED）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-4",
+        title: "キーボード操作の実装（GREEN）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-5",
+        title: "クリック操作のテスト追加（RED）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-6",
+        title: "クリック操作の実装（GREEN）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-7",
+        title: "コールバック実行とモーダルクローズのテスト追加（RED）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-8",
+        title: "コールバック実行とモーダルクローズの実装（GREEN）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-9",
+        title: "コードのリファクタリングと最適化（REFACTOR）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+      {
+        id: "ST-004-10",
+        title: "Definition of Done実施と最終確認（DONE）",
+        status: "red",
+        test_file: "src/destination-modal.test.ts",
+      },
+    ],
   },
 
   retrospective_insights: [
