@@ -96,7 +96,7 @@ const dashboard: ScrumDashboard = {
       id: "PBI-007",
       title: "コピー時の拡張子変更オプション",
       description: "コピー先毎に拡張子を変更できるオプションを追加。設定画面でコピー先項目毎に変更後の拡張子を設定可能にする。CopyDestination型にextensionフィールドを追加し、CopyServiceで拡張子変更ロジックを実装する",
-      status: "ready",
+      status: "done",
       acceptance_criteria: [
         "CopyDestination型にオプショナルなextension: string フィールドが追加される",
         "設定画面でコピー先項目毎に「拡張子変更」テキストフィールドが表示される（プレースホルダー: 例 '.txt' or 'md'）",
@@ -110,47 +110,47 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    // Sprint 7: Extension change option feature
+    // Sprint 7: Extension change option feature (COMPLETED)
     goal: "コピー先毎に拡張子を変更できるオプションを追加し、柔軟なファイルコピーを実現する",
-    status: "active",
+    status: "done",
     pbi_id: "PBI-007",
     subtasks: [
       {
         id: "S7-1",
         title: "CopyDestination型にextensionフィールドを追加",
-        status: "red",
+        status: "done",
         test_file: "src/types.test.ts",
       },
       {
         id: "S7-2",
         title: "normalizeExtension関数の実装（ドット有無の正規化）",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {
         id: "S7-3",
         title: "CopyServiceに拡張子変更ロジックを実装（splitFileName活用）",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
       {
         id: "S7-4",
         title: "設定画面に拡張子変更テキストフィールドを追加",
-        status: "red",
+        status: "done",
         test_file: "src/settings-tab.test.ts",
       },
       {
         id: "S7-5",
         title: "統合テストとリファクタリング",
-        status: "red",
+        status: "done",
         test_file: "src/copy-service.test.ts",
       },
     ],
   },
 
   retrospective_insights: [
-    // === Project Summary (Sprint 1-6) ===
-    "[Summary] 6Sprint完走、全6PBI完了、110テスト（255%増）、5Sprint連続100%受入基準達成",
+    // === Project Summary (Sprint 1-7) ===
+    "[Summary] 7Sprint完走、全7PBI完了、136テスト（324%増）、6Sprint連続100%受入基準達成",
     // === Key Patterns Established ===
     "[Pattern] TDD(RED-GREEN-REFACTOR) + 即座コミット + Definition of Done自動チェック",
     "[Pattern] Result<T,E>型 + DI + Obsidian APIモック = 型安全かつテスタブルな設計",
@@ -158,6 +158,7 @@ const dashboard: ScrumDashboard = {
     // === Key Learnings ===
     "[Learning] 型定義→テスト→実装の順序で過剰実装を防止",
     "[Learning] 統合テストは実装フェーズ最終段階で集中追加が効果的",
+    "[Learning] Sprint 7: 既存のsplitFileNameメソッドを再利用し拡張子変更を実装、normalizeExtension関数でドット有無を正規化",
     // === Future Actions ===
     "[Action] Obsidian上での手動動作確認を実施",
     "[Action] パフォーマンス最適化の検討（大容量ファイル、バッチ処理）",
