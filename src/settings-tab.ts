@@ -50,6 +50,18 @@ export class CopywaySettingTab extends PluginSettingTab {
 							}
 						});
 				})
+				.addText((text) => {
+					text
+						.setPlaceholder("Extension (e.g. .txt)")
+						.setValue(dest.extension ?? "")
+						.onChange(async (value) => {
+							const d = this.plugin.settings.destinations[i];
+							if (d) {
+								d.extension = value || undefined;
+								await this.plugin.saveSettings();
+							}
+						});
+				})
 				.addToggle((toggle) => {
 					toggle.setValue(dest.overwrite).onChange(async (value) => {
 						const d = this.plugin.settings.destinations[i];

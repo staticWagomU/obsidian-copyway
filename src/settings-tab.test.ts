@@ -184,6 +184,60 @@ describe("CopywaySettingTab", () => {
 
 			expect(plugin.settings.destinations[0]?.overwrite).toBe(true);
 		});
+
+		test("extensionテキスト入力が機能する", () => {
+			plugin.settings.destinations = [
+				{ path: "", description: "", overwrite: false },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			const inputs = settingTab.containerEl.querySelectorAll("input[type='text']");
+			// path, description, extension の3つのテキスト入力があるはず
+			expect(inputs.length).toBeGreaterThanOrEqual(3);
+
+			// extensionフィールドに値を入力（3番目の入力フィールド）
+			const extensionInput = inputs[2] as HTMLInputElement;
+			extensionInput.value = ".txt";
+			extensionInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+			expect(plugin.settings.destinations[0]?.extension).toBe(".txt");
+		});
+
+		test("extensionが空の状態で表示される", () => {
+			plugin.settings.destinations = [
+				{ path: "test", description: "Test", overwrite: false },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			const inputs = settingTab.containerEl.querySelectorAll("input[type='text']");
+			const extensionInput = inputs[2] as HTMLInputElement;
+
+			expect(extensionInput.value).toBe("");
+		});
+
+		test("既存のextension値が正しく表示される", () => {
+			plugin.settings.destinations = [
+				{ path: "test", description: "Test", overwrite: false, extension: ".md" },
+			];
+
+			const settingTab = new CopywaySettingTab(mockApp, plugin);
+			settingTab.containerEl = document.createElement("div");
+
+			settingTab.display();
+
+			const inputs = settingTab.containerEl.querySelectorAll("input[type='text']");
+			const extensionInput = inputs[2] as HTMLInputElement;
+
+			expect(extensionInput.value).toBe(".md");
+		});
 	});
 
 	describe("ST-005: コピー先削除UI実装（削除ボタン）", () => {
