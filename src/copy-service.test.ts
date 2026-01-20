@@ -446,6 +446,160 @@ describe("CopyService - I/Oエラーハンドリング", () => {
 	});
 });
 
+describe("CopyService - 拡張子変更機能", () => {
+	let service: CopyService;
+	let mockFs: MockFileSystem;
+
+	beforeEach(() => {
+		mockFs = new MockFileSystem();
+		mockFs.addDirectory("dest");
+		service = new CopyService(mockFs);
+	});
+
+	it("extensionが設定されている場合、ファイル名の拡張子を変更してコピーする", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+			extension: ".txt",
+		};
+
+		const result = await service.copy(
+			"Hello World",
+			"source.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe(joinPath("dest", "source.txt"));
+		}
+	});
+
+	it("extensionがドットなしで設定されても正しく動作する", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+			extension: "txt",
+		};
+
+		const result = await service.copy(
+			"Hello World",
+			"source.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe(joinPath("dest", "source.txt"));
+		}
+	});
+
+	it("extensionが空文字の場合は拡張子を削除する", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+			extension: "",
+		};
+
+		const result = await service.copy(
+			"Hello World",
+			"source.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe(joinPath("dest", "source"));
+		}
+	});
+
+	it("extensionが未設定の場合は元の拡張子を維持する", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+		};
+
+		const result = await service.copy(
+			"Hello World",
+			"source.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe(joinPath("dest", "source.md"));
+		}
+	});
+
+	it("拡張子のないファイルにextensionが設定された場合、拡張子を追加する", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+			extension: ".md",
+		};
+
+		const result = await service.copy(
+			"Hello World",
+			"README",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe(joinPath("dest", "README.md"));
+		}
+	});
+
+	it("copyWithRenameでも拡張子変更が機能する", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+			extension: ".txt",
+		};
+
+		// 既存ファイルを作成
+		mockFs.addFile(joinPath("dest", "file.txt"), "Original");
+
+		const result = await service.copyWithRename(
+			"New Content",
+			"file.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			// file.txt が存在するので file_1.txt になる
+			expect(result.path).toBe(joinPath("dest", "file_1.txt"));
+		}
+	});
+
+	it("複数ドットを含むファイル名の拡張子変更が正しく動作する", async () => {
+		const destination: CopyDestination = {
+			path: "dest",
+			description: "Destination folder",
+			overwrite: false,
+			extension: ".txt",
+		};
+
+		const result = await service.copy(
+			"Hello World",
+			"file.test.md",
+			destination,
+		);
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.path).toBe(joinPath("dest", "file.test.txt"));
+		}
+	});
+});
+
 describe("normalizeExtension - 拡張子の正規化", () => {
 	it("ドットなしの拡張子にドットを付与する", () => {
 		expect(normalizeExtension("txt")).toBe(".txt");

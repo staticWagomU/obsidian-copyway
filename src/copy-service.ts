@@ -197,7 +197,9 @@ export class CopyService implements ICopyService {
 				};
 			}
 
-			const targetPath = joinPath(destPath, sourceName);
+			// 拡張子変更を適用したファイル名を取得
+			const targetFileName = this.applyExtension(sourceName, destination.extension);
+			const targetPath = joinPath(destPath, targetFileName);
 
 			// ファイル存在チェック（Node.js fs を使用）
 			const exists = await this.fileSystem.fileExists(targetPath);
@@ -207,7 +209,7 @@ export class CopyService implements ICopyService {
 				return {
 					success: false,
 					error: "file_exists",
-					message: `File already exists: ${sourceName}`,
+					message: `File already exists: ${targetFileName}`,
 				};
 			}
 
@@ -250,9 +252,11 @@ export class CopyService implements ICopyService {
 				};
 			}
 
-			const { baseName, extension } = this.splitFileName(sourceName);
+			// 拡張子変更を適用したファイル名を取得
+			const targetFileName = this.applyExtension(sourceName, destination.extension);
+			const { baseName, extension } = this.splitFileName(targetFileName);
 			let counter = 0;
-			let targetPath = joinPath(destPath, sourceName);
+			let targetPath = joinPath(destPath, targetFileName);
 
 			// 利用可能なファイル名を見つけるまでループ（Node.js fs を使用）
 			while (await this.fileSystem.fileExists(targetPath)) {
@@ -294,6 +298,19 @@ export class CopyService implements ICopyService {
 			baseName: fileName.slice(0, lastDotIndex),
 			extension: fileName.slice(lastDotIndex),
 		};
+	}
+
+	/**
+	 * ファイル名に指定された拡張子を適用する
+	 * extensionがundefinedの場合は元のファイル名をそのまま返す
+	 */
+	private applyExtension(fileName: string, extension: string | undefined): string {
+		if (extension === undefined) {
+			return fileName;
+		}
+		const { baseName } = this.splitFileName(fileName);
+		const normalizedExt = normalizeExtension(extension);
+		return baseName + (normalizedExt ?? "");
 	}
 
 	/**
