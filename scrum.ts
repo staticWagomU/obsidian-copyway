@@ -91,6 +91,20 @@ const dashboard: ScrumDashboard = {
     { id: "PBI-004", title: "コピー先選択モーダル", description: "複数コピー先からの選択UI", status: "done", acceptance_criteria: ["Sprint 4で完了"], story_points: 3 },
     { id: "PBI-005", title: "上書き確認ダイアログ", description: "同名ファイル存在時の選択UI", status: "done", acceptance_criteria: ["Sprint 5で完了"], story_points: 3 },
     { id: "PBI-006", title: "コピーコマンド統合", description: "コマンドパレットからのコピー実行", status: "done", acceptance_criteria: ["Sprint 6で完了"], story_points: 5 },
+    // v1.1 feature backlog
+    {
+      id: "PBI-007",
+      title: "コピー時の拡張子変更オプション",
+      description: "コピー先毎に拡張子を変更できるオプションを追加。設定画面でコピー先項目毎に変更後の拡張子を設定可能にする",
+      status: "draft",
+      acceptance_criteria: [
+        "設定画面でコピー先項目毎に「拡張子変更」オプションを設定できる",
+        "拡張子変更オプションが空の場合は元の拡張子を維持する",
+        "拡張子変更オプションに値がある場合はコピー時にその拡張子に変更される",
+        "拡張子は先頭のドット有無を問わず正しく処理される（例: 'txt' も '.txt' も同じ結果）",
+      ],
+      story_points: 3,
+    },
   ],
 
   sprint: {
