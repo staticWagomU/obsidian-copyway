@@ -91,61 +91,16 @@ const dashboard: ScrumDashboard = {
     { id: "PBI-004", title: "コピー先選択モーダル", description: "複数コピー先からの選択UI", status: "done", acceptance_criteria: ["Sprint 4で完了"], story_points: 3 },
     { id: "PBI-005", title: "上書き確認ダイアログ", description: "同名ファイル存在時の選択UI", status: "done", acceptance_criteria: ["Sprint 5で完了"], story_points: 3 },
     { id: "PBI-006", title: "コピーコマンド統合", description: "コマンドパレットからのコピー実行", status: "done", acceptance_criteria: ["Sprint 6で完了"], story_points: 5 },
-    // v1.1 feature backlog
-    {
-      id: "PBI-007",
-      title: "コピー時の拡張子変更オプション",
-      description: "コピー先毎に拡張子を変更できるオプションを追加。設定画面でコピー先項目毎に変更後の拡張子を設定可能にする。CopyDestination型にextensionフィールドを追加し、CopyServiceで拡張子変更ロジックを実装する",
-      status: "done",
-      acceptance_criteria: [
-        "CopyDestination型にオプショナルなextension: string フィールドが追加される",
-        "設定画面でコピー先項目毎に「拡張子変更」テキストフィールドが表示される（プレースホルダー: 例 '.txt' or 'md'）",
-        "拡張子変更オプションが空またはundefinedの場合は元の拡張子を維持する",
-        "拡張子変更オプションに値がある場合はコピー時にその拡張子に変更される（例: note.md -> note.txt）",
-        "拡張子は先頭のドット有無を問わず正しく処理される（normalizeExtension関数で '.txt' と 'txt' を統一）",
-        "既存のsplitFileNameメソッドを活用して拡張子置換を行う",
-      ],
-      story_points: 3,
-    },
+    // v1.1 feature complete
+    { id: "PBI-007", title: "コピー時の拡張子変更オプション", description: "コピー先毎に拡張子を変更", status: "done", acceptance_criteria: ["Sprint 7で完了"], story_points: 3 },
   ],
 
   sprint: {
-    // Sprint 7: Extension change option feature (COMPLETED)
-    goal: "コピー先毎に拡張子を変更できるオプションを追加し、柔軟なファイルコピーを実現する",
-    status: "done",
-    pbi_id: "PBI-007",
-    subtasks: [
-      {
-        id: "S7-1",
-        title: "CopyDestination型にextensionフィールドを追加",
-        status: "done",
-        test_file: "src/types.test.ts",
-      },
-      {
-        id: "S7-2",
-        title: "normalizeExtension関数の実装（ドット有無の正規化）",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "S7-3",
-        title: "CopyServiceに拡張子変更ロジックを実装（splitFileName活用）",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-      {
-        id: "S7-4",
-        title: "設定画面に拡張子変更テキストフィールドを追加",
-        status: "done",
-        test_file: "src/settings-tab.test.ts",
-      },
-      {
-        id: "S7-5",
-        title: "統合テストとリファクタリング",
-        status: "done",
-        test_file: "src/copy-service.test.ts",
-      },
-    ],
+    // Sprint 7 completed - ready for next sprint
+    goal: "",
+    status: "planning",
+    pbi_id: null,
+    subtasks: [],
   },
 
   retrospective_insights: [
