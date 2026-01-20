@@ -352,4 +352,148 @@ describe("CopyFileCommand - Integration Tests", () => {
 			});
 		});
 	});
+
+	describe("ST-6.21: 拡張子変更機能の統合テスト", () => {
+		it("シナリオ1: extension設定あり→ファイル拡張子が変更される", async () => {
+			// Setup
+			mockFs.addDirectory("/archive");
+			const mockFile: TFile = { name: "note.md", path: "note.md" } as TFile;
+			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
+			mockApp.vault.read = vi.fn().mockResolvedValue("# Note content");
+
+			const dest: CopyDestination = {
+				path: "/archive",
+				description: "Archive Folder",
+				overwrite: false,
+				extension: ".txt",
+			};
+			mockGetDestinations = vi.fn(() => [dest]);
+
+			const command = new CopyFileCommand(
+				mockApp,
+				copyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			// Execute
+			await command.execute();
+
+			// Assert - 拡張子が.txtに変更されている
+			expect(mockFs.getWrittenContent(joinPath("/archive", "note.txt"))).toBe("# Note content");
+			// 元の拡張子ではファイルが作成されていない
+			expect(mockFs.getWrittenContent(joinPath("/archive", "note.md"))).toBeUndefined();
+		});
+
+		it("シナリオ2: extensionがドットなしで設定されても正しく変換される", async () => {
+			// Setup
+			mockFs.addDirectory("/archive");
+			const mockFile: TFile = { name: "doc.md", path: "doc.md" } as TFile;
+			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
+			mockApp.vault.read = vi.fn().mockResolvedValue("Document content");
+
+			const dest: CopyDestination = {
+				path: "/archive",
+				description: "Archive Folder",
+				overwrite: false,
+				extension: "txt", // ドットなし
+			};
+			mockGetDestinations = vi.fn(() => [dest]);
+
+			const command = new CopyFileCommand(
+				mockApp,
+				copyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			// Execute
+			await command.execute();
+
+			// Assert - 拡張子が.txtに変更されている
+			expect(mockFs.getWrittenContent(joinPath("/archive", "doc.txt"))).toBe("Document content");
+		});
+
+		it("シナリオ3: extension未設定→元の拡張子のまま", async () => {
+			// Setup
+			mockFs.addDirectory("/archive");
+			const mockFile: TFile = { name: "file.md", path: "file.md" } as TFile;
+			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
+			mockApp.vault.read = vi.fn().mockResolvedValue("File content");
+
+			const dest: CopyDestination = {
+				path: "/archive",
+				description: "Archive Folder",
+				overwrite: false,
+				// extension は undefined
+			};
+			mockGetDestinations = vi.fn(() => [dest]);
+
+			const command = new CopyFileCommand(
+				mockApp,
+				copyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			// Execute
+			await command.execute();
+
+			// Assert - 元の拡張子のまま
+			expect(mockFs.getWrittenContent(joinPath("/archive", "file.md"))).toBe("File content");
+		});
+
+		it("シナリオ4: extensionが空文字→拡張子が削除される", async () => {
+			// Setup
+			mockFs.addDirectory("/archive");
+			const mockFile: TFile = { name: "script.md", path: "script.md" } as TFile;
+			mockApp.workspace.getActiveFile = vi.fn(() => mockFile);
+			mockApp.vault.read = vi.fn().mockResolvedValue("Script content");
+
+			const dest: CopyDestination = {
+				path: "/archive",
+				description: "Archive Folder",
+				overwrite: false,
+				extension: "", // 空文字で拡張子削除
+			};
+			mockGetDestinations = vi.fn(() => [dest]);
+
+			const command = new CopyFileCommand(
+				mockApp,
+				copyService,
+				mockGetDestinations,
+				mockNotice,
+			);
+
+			// Execute
+			await command.execute();
+
+			// Assert - 拡張子が削除されている
+			expect(mockFs.getWrittenContent(joinPath("/archive", "script"))).toBe("Script content");
+		});
+
+		it("シナリオ5: extension設定+リネームモード→変更された拡張子で連番", async () => {
+			// Setup
+			mockFs.addDirectory("/archive");
+			// 変換後の拡張子を持つファイルが既に存在
+			mockFs.addFile(joinPath("/archive", "note.txt"), "Existing content");
+
+			const dest: CopyDestination = {
+				path: "/archive",
+				description: "Archive Folder",
+				overwrite: false,
+				extension: ".txt",
+			};
+
+			// copyWithRenameを直接呼ぶ（モーダル経由のリネーム操作をシミュレート）
+			const result = await copyService.copyWithRename("New content", "note.md", dest);
+
+			// Assert - 変更後の拡張子で連番が付与される
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.path).toBe(joinPath("/archive", "note_1.txt"));
+			}
+			expect(mockFs.getWrittenContent(joinPath("/archive", "note_1.txt"))).toBe("New content");
+		});
+	});
 });
