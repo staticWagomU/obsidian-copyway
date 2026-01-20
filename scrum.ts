@@ -150,17 +150,22 @@ const dashboard: ScrumDashboard = {
 
   retrospective_insights: [
     // === Project Summary (Sprint 1-7) ===
-    "[Summary] 7Sprint完走、全7PBI完了、136テスト（324%増）、6Sprint連続100%受入基準達成",
+    "[Summary] 7Sprint完走、全7PBI完了、136テスト（Sprint 1比324%増）、6Sprint連続100%受入基準達成",
     // === Key Patterns Established ===
     "[Pattern] TDD(RED-GREEN-REFACTOR) + 即座コミット + Definition of Done自動チェック",
-    "[Pattern] Result<T,E>型 + DI + Obsidian APIモック = 型安全かつテスタブルな設計",
+    "[Pattern] Result<T,E>型 + DI + IFileSystem抽象化 = 型安全かつテスタブルな設計",
     "[Pattern] Modal継承 + コールバック + Promise wrap = 非同期UIの統一パターン",
     // === Key Learnings ===
     "[Learning] 型定義→テスト→実装の順序で過剰実装を防止",
     "[Learning] 統合テストは実装フェーズ最終段階で集中追加が効果的",
-    "[Learning] Sprint 7: 既存のsplitFileNameメソッドを再利用し拡張子変更を実装、normalizeExtension関数でドット有無を正規化",
+    "[Learning] 既存メソッドの再利用（splitFileName）で一貫性を保ちながら新機能を追加",
+    "[Learning] normalizeExtension関数でユーザー入力の柔軟性を向上（ドット有無を正規化）",
+    "[Learning] 小規模PBI（SP3）でもTDDサイクルの価値は変わらず、26テスト追加で品質を確保",
+    // === Success Metrics ===
+    "[Metrics] テスト数推移: Sprint 1(32) → Sprint 6(110, +344%) → Sprint 7(136, +24%)",
+    "[Metrics] 機能成熟に伴いテスト増加率は鈍化するが、品質基準は維持",
     // === Future Actions ===
-    "[Action] Obsidian上での手動動作確認を実施",
+    "[Action] Obsidian上での手動動作確認を実施（拡張子変更オプションの実際の動作確認）",
     "[Action] パフォーマンス最適化の検討（大容量ファイル、バッチ処理）",
   ],
 };
