@@ -23,6 +23,27 @@ describe("CopyDestination型", () => {
 
 		expect(destination.overwrite).toBe(true);
 	});
+
+	test("オプショナルなextensionフィールドを持つCopyDestinationオブジェクトが作成できる", () => {
+		const destination: CopyDestination = {
+			path: "/path/to/destination",
+			description: "拡張子変更付きコピー先",
+			overwrite: false,
+			extension: ".txt",
+		};
+
+		expect(destination.extension).toBe(".txt");
+	});
+
+	test("extensionフィールドが未指定のCopyDestinationオブジェクトが作成できる", () => {
+		const destination: CopyDestination = {
+			path: "/path/to/destination",
+			description: "拡張子変更なしコピー先",
+			overwrite: false,
+		};
+
+		expect(destination.extension).toBeUndefined();
+	});
 });
 
 describe("CopywaySettings型", () => {

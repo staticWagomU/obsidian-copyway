@@ -8,6 +8,8 @@ export interface CopyDestination {
 	description: string;
 	/** 上書きを許可するかどうか */
 	overwrite: boolean;
+	/** コピー時に変更する拡張子（オプショナル） */
+	extension?: string;
 }
 
 /**
