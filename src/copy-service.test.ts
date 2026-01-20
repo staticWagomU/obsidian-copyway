@@ -5,7 +5,7 @@ import type {
 	CopyResult,
 	IFileSystem,
 } from "./copy-service";
-import { CopyService, expandTilde, joinPath } from "./copy-service";
+import { CopyService, expandTilde, joinPath, normalizeExtension } from "./copy-service";
 import type { CopyDestination } from "./types";
 // テスト環境では Node.js モジュールを直接インポート可能
 import os from "node:os";
@@ -443,5 +443,30 @@ describe("CopyService - I/Oエラーハンドリング", () => {
 		if (!result.success) {
 			expect(result.error).toBe("io_error");
 		}
+	});
+});
+
+describe("normalizeExtension - 拡張子の正規化", () => {
+	it("ドットなしの拡張子にドットを付与する", () => {
+		expect(normalizeExtension("txt")).toBe(".txt");
+		expect(normalizeExtension("md")).toBe(".md");
+	});
+
+	it("ドット付きの拡張子はそのまま返す", () => {
+		expect(normalizeExtension(".txt")).toBe(".txt");
+		expect(normalizeExtension(".md")).toBe(".md");
+	});
+
+	it("空文字列はそのまま返す", () => {
+		expect(normalizeExtension("")).toBe("");
+	});
+
+	it("undefinedはundefinedを返す", () => {
+		expect(normalizeExtension(undefined)).toBeUndefined();
+	});
+
+	it("複数ドットの拡張子は最初のドットのみ考慮する", () => {
+		expect(normalizeExtension(".test.md")).toBe(".test.md");
+		expect(normalizeExtension("test.md")).toBe(".test.md");
 	});
 });

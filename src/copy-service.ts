@@ -108,6 +108,23 @@ export function joinPath(base: string, ...paths: string[]): string {
 }
 
 /**
+ * 拡張子を正規化する
+ * ドットがない場合は先頭にドットを付与する
+ */
+export function normalizeExtension(extension: string | undefined): string | undefined {
+	if (extension === undefined) {
+		return undefined;
+	}
+	if (extension === "") {
+		return "";
+	}
+	if (extension.startsWith(".")) {
+		return extension;
+	}
+	return `.${extension}`;
+}
+
+/**
  * コピー成功時の結果型
  */
 export interface CopySuccess {
