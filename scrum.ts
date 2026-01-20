@@ -110,11 +110,42 @@ const dashboard: ScrumDashboard = {
   ],
 
   sprint: {
-    // Sprint 6 completed - All PBIs done, product is feature complete
-    goal: "",
-    status: "planning",
-    pbi_id: null,
-    subtasks: [],
+    // Sprint 7: Extension change option feature
+    goal: "コピー先毎に拡張子を変更できるオプションを追加し、柔軟なファイルコピーを実現する",
+    status: "active",
+    pbi_id: "PBI-007",
+    subtasks: [
+      {
+        id: "S7-1",
+        title: "CopyDestination型にextensionフィールドを追加",
+        status: "red",
+        test_file: "src/types.test.ts",
+      },
+      {
+        id: "S7-2",
+        title: "normalizeExtension関数の実装（ドット有無の正規化）",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "S7-3",
+        title: "CopyServiceに拡張子変更ロジックを実装（splitFileName活用）",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+      {
+        id: "S7-4",
+        title: "設定画面に拡張子変更テキストフィールドを追加",
+        status: "red",
+        test_file: "src/settings-tab.test.ts",
+      },
+      {
+        id: "S7-5",
+        title: "統合テストとリファクタリング",
+        status: "red",
+        test_file: "src/copy-service.test.ts",
+      },
+    ],
   },
 
   retrospective_insights: [
